@@ -1,5 +1,5 @@
 # TankBox
-坦克大战盒子，一个致力于优化游戏体验，统计分析游戏数据的全能性辅助工具
+坦克大战盒子，一个致力于优化游戏体验，统计分析游戏数据的全能性辅助工具。下载使用请访问官方网址：www.bestxiaoxiang.top  数据统计网址: www.bestxiaoxiang.top/tank_data/index.html
 
 项目介绍：
 
