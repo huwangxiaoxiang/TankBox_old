@@ -184,7 +184,7 @@ void CTankLoginPlusDlg::Start()
 	}
 	int result = (int)ShellExecute(NULL, L"open", DataDir, NULL, NULL, SW_SHOW);//打开主程序
 	if (result < 32)
-		MessageBox(NULL, L"启动错误", NULL);
+		MessageBox(L"游戏无法启动。因为您从未使用官方启动器（微端）启动过游戏，因此您必须前往 www.tkdz.qq.com下载微端后才能正常使用盒子启动游戏。", L"启动错误", NULL);
 	Sleep(3000);
 }
 
@@ -257,26 +257,7 @@ BOOL CTankLoginPlusDlg::startGames(LPTSTR ID, LPTSTR key, int serverID)
 
 	if (avaliable_dll == csharp_dll)
 		MessageBox(L"缺少必备组件，游戏将正常启动，但是功能插件将不可用！", L"组件缺失");
-/*
-	FILETIME csharp_dll_time = get_Filetime(csharp_dll);
-	FILETIME my_dll_time = get_Filetime(avaliable_dll);
 
-	
-	if (csharp_dll_time.dwHighDateTime > my_dll_time.dwHighDateTime || (csharp_dll_time.dwHighDateTime == my_dll_time.dwHighDateTime && csharp_dll_time.dwLowDateTime > my_dll_time.dwLowDateTime)) {
-		CopyFile(avaliable_dll, store_dll, false);
-		DeleteFile(avaliable_dll);
-		CopyFile(csharp_dll, my_dll2,false);
-		avaliable_dll = my_dll2;
-	}*///1.8日注释，弃用老式版本检测策略，启用新版方式
-
-	/*
-	if (!update_check) {//有版本更新的情况
-		CopyFile(avaliable_dll, store_dll, false);
-		DeleteFile(avaliable_dll);
-		CopyFile(csharp_dll, my_dll2, false);
-		avaliable_dll = my_dll2;
-	}
-	*/
 	BOOL inject = FALSE;
 	if (this->update_check) {
 		if (_trename(csharp_dll, temp_dll) == 0) {
