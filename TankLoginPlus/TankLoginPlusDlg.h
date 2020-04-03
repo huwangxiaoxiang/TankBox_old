@@ -59,10 +59,36 @@ private:
 	BOOL update_check = FALSE;
 
 	TCHAR current_path[MAX_PATH] = { 0 };
+
+	// 检查更新进度条
+	CProgressCtrl udpate_progress;
 	
+	void InitPlugin();
+	void savePlugin();
 
 public:
 	BOOL pure_btn;
 	afx_msg void OnBnClickedCheck1();
 	afx_msg void OnClose();
+	
+private:
+	// 右键锁定
+	BOOL right_lock;
+	// 伤害面板
+	BOOL damage_panel;
+	// 屏蔽世界喇叭
+	BOOL disable_speak;
+	// 被点亮喊话
+	BOOL night_speak;
+	// 战斗力评估
+	BOOL battle_evaluate;
+	// 熊吼金币弹
+	BOOL bear_missile;
+public:
+	afx_msg void OnBnClickedCheck2();
+	afx_msg void OnBnClickedCheck3();
+	afx_msg void OnBnClickedCheck4();
+	afx_msg void OnBnClickedCheck5();
+	afx_msg void OnBnClickedCheck6();
+	afx_msg void OnBnClickedCheck7();
 };

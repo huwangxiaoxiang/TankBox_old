@@ -16,6 +16,7 @@
 #include <fstream>
 #include "HttpHelper.h"
 #include <iostream>
+#include <sstream>
 
 
 // CTankLoginPlusDlg 对话框
@@ -26,6 +27,12 @@ CTankLoginPlusDlg::CTankLoginPlusDlg(CWnd* pParent /*=nullptr*/)
 	: CDialogEx(IDD_TANKLOGINPLUS_DIALOG, pParent)
 	, is_common(FALSE)
 	, pure_btn(FALSE)
+	, right_lock(TRUE)
+	, damage_panel(TRUE)
+	, disable_speak(TRUE)
+	, night_speak(TRUE)
+	, battle_evaluate(TRUE)
+	, bear_missile(TRUE)
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDI_ICON5);
 }
@@ -36,6 +43,12 @@ void CTankLoginPlusDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_COMBO1, ServerBox);
 
 	DDX_Check(pDX, IDC_CHECK1, pure_btn);
+	DDX_Check(pDX, IDC_CHECK2, right_lock);
+	DDX_Check(pDX, IDC_CHECK3, damage_panel);
+	DDX_Check(pDX, IDC_CHECK4, disable_speak);
+	DDX_Check(pDX, IDC_CHECK5, night_speak);
+	DDX_Check(pDX, IDC_CHECK6, battle_evaluate);
+	DDX_Check(pDX, IDC_CHECK7, bear_missile);
 }
 
 BEGIN_MESSAGE_MAP(CTankLoginPlusDlg, CDialogEx)
@@ -45,6 +58,12 @@ BEGIN_MESSAGE_MAP(CTankLoginPlusDlg, CDialogEx)
 	ON_WM_TIMER()
 	ON_BN_CLICKED(IDC_CHECK1, &CTankLoginPlusDlg::OnBnClickedCheck1)
 	ON_WM_CLOSE()
+	ON_BN_CLICKED(IDC_CHECK2, &CTankLoginPlusDlg::OnBnClickedCheck2)
+	ON_BN_CLICKED(IDC_CHECK3, &CTankLoginPlusDlg::OnBnClickedCheck3)
+	ON_BN_CLICKED(IDC_CHECK4, &CTankLoginPlusDlg::OnBnClickedCheck4)
+	ON_BN_CLICKED(IDC_CHECK5, &CTankLoginPlusDlg::OnBnClickedCheck5)
+	ON_BN_CLICKED(IDC_CHECK6, &CTankLoginPlusDlg::OnBnClickedCheck6)
+	ON_BN_CLICKED(IDC_CHECK7, &CTankLoginPlusDlg::OnBnClickedCheck7)
 END_MESSAGE_MAP()
 
 
@@ -59,18 +78,18 @@ BOOL CTankLoginPlusDlg::OnInitDialog()
 	SetIcon(m_hIcon, TRUE);			// 设置大图标
 	SetIcon(m_hIcon, FALSE);		// 设置小图标
 
+	this->InitPlugin();
+
 	BaseAPI api;
 	api.CMDCommand(L"dll\\TankFlow.exe");
-
-	std::cout << "OK" << std::endl;
-
 	for (int i = 0; i < 7; i++) {
 		ServerBox.AddString(services[i]);
 	}
 	if (!checkDLL()) {
 		exit(0);
 	}
-	
+	this->update_check = this->check_Assembly();
+
 	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
 }
 
@@ -361,7 +380,8 @@ BOOL CTankLoginPlusDlg::DirectGame(LPTSTR ID, LPTSTR key, int serverID)
 	PROCESS_INFORMATION pi;
 	SetCurrentDirectory(getTankDir());
 	BOOL tank = CreateProcess(NULL, GameStartCMD(ID, key, serverID), NULL, NULL, FALSE, 0, NULL, NULL, &si, &pi);
-
+	CloseHandle(pi.hThread);
+	CloseHandle(pi.hProcess);
 	Sleep(2000);
 	return TRUE;
 }
@@ -407,6 +427,111 @@ BOOL CTankLoginPlusDlg::Is_exist(LPTSTR path) {
 		return TRUE;
 	}
 }
+//初始化插件启用状态
+void CTankLoginPlusDlg::InitPlugin()
+{
+	this->right_lock = TRUE;
+	this->disable_speak = TRUE;
+	this->damage_panel = TRUE;
+	this->night_speak = TRUE;
+	this->bear_missile = TRUE;
+	this->battle_evaluate = TRUE;
+
+	LPTSTR path = this->getTankDir();
+	PathAppend(path, L"Tank_Data\\Boxconfig");
+	std::fstream _file;
+	_file.open(path, std::ios::in);
+	std::string a, b;
+	char buf[1024] = { 0 };
+	while (_file.getline(buf, sizeof(buf))) {
+		std::stringstream line(buf);
+		try {
+			line >> a;
+			line >> b;
+			if (a == "right_lock") {
+				if (b == "1")
+					this->right_lock = TRUE;
+				else
+					this->right_lock = FALSE;
+			}
+			else if (a == "damage_panel") {
+				if (b == "1")
+					this->damage_panel = TRUE;
+				else
+					this->damage_panel = FALSE;
+			}
+			else if (a == "disable_speak") {
+				if (b == "1")
+					this->disable_speak = TRUE;
+				else
+					this->disable_speak = FALSE;
+			}
+			else if (a == "night_speak") {
+				if (b == "1")
+					this->night_speak = TRUE;
+				else
+					this->night_speak = FALSE;
+			}
+			else if (a == "battle_evaluate") {
+				if (b == "1")
+					this->battle_evaluate = TRUE;
+				else
+					this->battle_evaluate = FALSE;
+			}
+			else if (a == "bear_missile") {
+				if (b == "1")
+					this->bear_missile = TRUE;
+				else
+					this->bear_missile = FALSE;
+			}
+		}
+		catch (std::string &e) {
+
+		}
+		line.clear();
+	}
+	_file.close();
+	UpdateData(false);
+}
+
+
+//保存插件启用配置信息
+void CTankLoginPlusDlg::savePlugin()
+{
+	UpdateData(true);
+	LPTSTR path = this->getTankDir();
+	PathAppend(path, L"Tank_Data\\Boxconfig");
+	std::fstream _file;
+	_file.open(path, std::ios::out);
+
+	std::string s = "";
+	if (this->right_lock)
+		s += "right_lock 1\n";
+	else
+		s += "right_lock 0\n";
+	if (this->damage_panel)
+		s += "damage_panel 1\n";
+	else
+		s += "damage_panel 0\n";
+	if (this->disable_speak)
+		s += "disable_speak 1\n";
+	else
+		s += "disable_speak 0\n";
+	if (this->night_speak)
+		s += "night_speak 1\n";
+	else
+		s += "night_speak 0\n";
+	if (this->battle_evaluate)
+		s += "battle_evaluate 1\n";
+	else
+		s += "battle_evaluate 0\n";
+	if (this->bear_missile)
+		s += "bear_missile 1\n";
+	else
+		s += "bear_missile 0\n";
+	_file << s;
+	_file.close();
+}
 
 void CTankLoginPlusDlg::OnBnClickedCheck1()
 {
@@ -423,4 +548,40 @@ void CTankLoginPlusDlg::OnClose()
 	api.CMDCommand(L"taskkill /F /im TankFlow.exe");
 	api.CMDCommand(L"taskkill /F /im TankFlow.exe");
 	CDialogEx::OnClose();
+}
+
+
+void CTankLoginPlusDlg::OnBnClickedCheck2()
+{
+	this->savePlugin();
+}
+
+
+void CTankLoginPlusDlg::OnBnClickedCheck3()
+{
+	this->savePlugin();
+}
+
+
+void CTankLoginPlusDlg::OnBnClickedCheck4()
+{
+	this->savePlugin();
+}
+
+
+void CTankLoginPlusDlg::OnBnClickedCheck5()
+{
+	this->savePlugin();
+}
+
+
+void CTankLoginPlusDlg::OnBnClickedCheck6()
+{
+	this->savePlugin();
+}
+
+
+void CTankLoginPlusDlg::OnBnClickedCheck7()
+{
+	this->savePlugin();
 }
