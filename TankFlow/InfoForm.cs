@@ -22,10 +22,12 @@ namespace TankFlow
         const int BATTLE_END = 36279;
         const int SPOTED = 36281;
         const int UNSPOTED = 36280;
+        const int DISABLE_PANEL = 36282;
+        const int ENALBE_PANEL = 36283;
         const string GameClass = "UnityWndClass";
         const string GameName = "Tank Battle";
-        PCManager manager;
         bool is_lock = true;
+        bool show_damage_panel = true;
         List<Damage> damage_list=new List<Damage>();
         Damage[] temp_damage = new Damage[6];
 
@@ -36,8 +38,6 @@ namespace TankFlow
             this.postimer.Stop();
             this.StartPosition = FormStartPosition.Manual;
             followPosition();
-            manager = new PCManager(100);
-          
         }
 
         //初始化窗口数据
@@ -122,9 +122,9 @@ namespace TankFlow
                     if (dama.valid)
                     {
                         damage_list.Add(dama);
-                        PushString(dama);
+                        if(this.show_damage_panel)
+                            PushString(dama);
                     }
-                    this.postimer.Start();
                     break;
                 case EVENT:
                     OnHandleEvent((int)m.LParam);
@@ -138,37 +138,17 @@ namespace TankFlow
         
         private void uploadData()
         {
+            List<Damage> valid_damage = new List<Damage>();
            foreach(Damage data in damage_list)
             {
                 if (data.valid)
                 {
-                    manager.AddProductPlus(data);
+                    valid_damage.Add(data);
                 }
             }
             damage_list.Clear();
-            Thread consumer = new Thread(() =>
-            {
-                int times = 0;
-                int fail = 0;
-                Log.AddLog("消费者线程开始");
-                Console.WriteLine("消费者线程开始：" +DateTime.Now.ToString());
-                while (true)
-                {
-                    Damage m = (Damage)manager.GetProduct(10000);
-                    if (m != null)
-                    {
-                        if (!Connector.add_damage(m))
-                            fail++;
-                        times++;
-                        m = null;
-                    }
-                    else
-                        break;
-                }
-                Console.WriteLine("消费者线程结束，上传数据：" + times.ToString()+" 结束时间:"+DateTime.Now.ToString());
-                Log.AddLog("消费者线程结束，上传数据：" + times.ToString()+" 失败数："+fail.ToString());
-            });
-            consumer.Start();
+            UploadManager manager = new UploadManager(valid_damage);
+            manager.Upload();//开始上传数据
         }
 
         private void OnHandleEvent(int flag)
@@ -186,14 +166,21 @@ namespace TankFlow
                     this.Hide();
                     Console.WriteLine("战斗结束");
                     uploadData();
+                    initWindow();
                     break;
                 case SPOTED:
                     this.spot_state.Visible = true;
                     this.Show();
-                    this.postimer.Start();
+                    //this.postimer.Start();
                     break;
                 case UNSPOTED:
                     this.spot_state.Visible = false;
+                    break;
+                case DISABLE_PANEL:
+                    this.show_damage_panel = false;
+                    break;
+                case ENALBE_PANEL:
+                    this.show_damage_panel = true;
                     break;
                 default:
                     Console.WriteLine("未知消息类型："+flag);
@@ -224,7 +211,6 @@ namespace TankFlow
             byte[] bt = new byte[mystr.cbData];
             Marshal.Copy(mystr.lpData, bt, 0, bt.Length);
             string m2 = System.Text.Encoding.Unicode.GetString(bt);
-            Console.WriteLine(m2);
             return m2;
         }
 

@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace TankFlow
 {
+    [Obsolete]
     static class Connector
     {
         public static bool add_damage(Damage damage)

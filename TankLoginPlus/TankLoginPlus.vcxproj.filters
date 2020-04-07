@@ -39,6 +39,9 @@
     <ClInclude Include="HttpHelper.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="TankPlugin.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="TankLoginPlus.cpp">
@@ -54,6 +57,9 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="HttpHelper.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="TankPlugin.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

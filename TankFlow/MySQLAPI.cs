@@ -2,13 +2,12 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
+
 
 namespace TankFlow
 {
+    [Obsolete]
     static class MySqlAPI
     {
         static string IP="47.101.70.188";
@@ -19,7 +18,8 @@ namespace TankFlow
         private static MySqlConnection con = null;
         private static Mutex mutex = new Mutex();
   
-
+       
+        [Obsolete]
         public static bool ConnectServer()
         {
             string connStr = "server=" + IP + ";port=" + port.ToString() + ";user=" + username + ";password=" + password + ";database=" + database+ ";Charset=utf8";
@@ -55,6 +55,7 @@ namespace TankFlow
             }
         }
 
+        [Obsolete]
         public static bool CloseServer()
         {
             try
@@ -72,6 +73,7 @@ namespace TankFlow
             }
         }
 
+        [Obsolete]
         public static int ExecuteProcedure(string pro_name, Param param)
         {
             int result = -1;

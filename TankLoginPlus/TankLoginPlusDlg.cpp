@@ -13,10 +13,8 @@
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
-#include <fstream>
-#include "HttpHelper.h"
-#include <iostream>
-#include <sstream>
+
+
 
 
 // CTankLoginPlusDlg 对话框
@@ -79,7 +77,7 @@ BOOL CTankLoginPlusDlg::OnInitDialog()
 	SetIcon(m_hIcon, FALSE);		// 设置小图标
 
 	this->InitPlugin();
-
+	this->savePlugin();
 	BaseAPI api;
 	api.CMDCommand(L"dll\\TankFlow.exe");
 	for (int i = 0; i < 7; i++) {
@@ -427,70 +425,35 @@ BOOL CTankLoginPlusDlg::Is_exist(LPTSTR path) {
 		return TRUE;
 	}
 }
+BOOL CTankLoginPlusDlg::getPluginState(std::string name)
+{
+	std::string temp =TankPluginManager::getPluginState(name);
+	if (temp == "1"||temp=="")
+		return TRUE;
+	else
+		return FALSE;
+}
+void CTankLoginPlusDlg::setPluginState(std::string name, BOOL state)
+{
+	std::string m = "0";
+	if (state) m = "1";
+	TankPluginManager::setPlugin(name, m);
+}
 //初始化插件启用状态
 void CTankLoginPlusDlg::InitPlugin()
 {
-	this->right_lock = TRUE;
-	this->disable_speak = TRUE;
-	this->damage_panel = TRUE;
-	this->night_speak = TRUE;
-	this->bear_missile = TRUE;
-	this->battle_evaluate = TRUE;
-
 	LPTSTR path = this->getTankDir();
-	PathAppend(path, L"Tank_Data\\Boxconfig");
-	std::fstream _file;
-	_file.open(path, std::ios::in);
-	std::string a, b;
-	char buf[1024] = { 0 };
-	while (_file.getline(buf, sizeof(buf))) {
-		std::stringstream line(buf);
-		try {
-			line >> a;
-			line >> b;
-			if (a == "right_lock") {
-				if (b == "1")
-					this->right_lock = TRUE;
-				else
-					this->right_lock = FALSE;
-			}
-			else if (a == "damage_panel") {
-				if (b == "1")
-					this->damage_panel = TRUE;
-				else
-					this->damage_panel = FALSE;
-			}
-			else if (a == "disable_speak") {
-				if (b == "1")
-					this->disable_speak = TRUE;
-				else
-					this->disable_speak = FALSE;
-			}
-			else if (a == "night_speak") {
-				if (b == "1")
-					this->night_speak = TRUE;
-				else
-					this->night_speak = FALSE;
-			}
-			else if (a == "battle_evaluate") {
-				if (b == "1")
-					this->battle_evaluate = TRUE;
-				else
-					this->battle_evaluate = FALSE;
-			}
-			else if (a == "bear_missile") {
-				if (b == "1")
-					this->bear_missile = TRUE;
-				else
-					this->bear_missile = FALSE;
-			}
-		}
-		catch (std::string &e) {
+	PathAppend(path, L"Tank_Data\\Boxconfig"); 
+	
+	TankPluginManager::initPlugin(path);
+	
+	this->right_lock = this->getPluginState("right_lock");
+	this->damage_panel = this->getPluginState("damage_panel");
+	this->disable_speak = this->getPluginState("disable_speak");
+	this->night_speak = this->getPluginState("night_speak");
+	this->bear_missile = this->getPluginState("bear_missile");
+	this->battle_evaluate = this->getPluginState("battle_evaluate");
 
-		}
-		line.clear();
-	}
-	_file.close();
 	UpdateData(false);
 }
 
@@ -499,38 +462,14 @@ void CTankLoginPlusDlg::InitPlugin()
 void CTankLoginPlusDlg::savePlugin()
 {
 	UpdateData(true);
-	LPTSTR path = this->getTankDir();
-	PathAppend(path, L"Tank_Data\\Boxconfig");
-	std::fstream _file;
-	_file.open(path, std::ios::out);
 
-	std::string s = "";
-	if (this->right_lock)
-		s += "right_lock 1\n";
-	else
-		s += "right_lock 0\n";
-	if (this->damage_panel)
-		s += "damage_panel 1\n";
-	else
-		s += "damage_panel 0\n";
-	if (this->disable_speak)
-		s += "disable_speak 1\n";
-	else
-		s += "disable_speak 0\n";
-	if (this->night_speak)
-		s += "night_speak 1\n";
-	else
-		s += "night_speak 0\n";
-	if (this->battle_evaluate)
-		s += "battle_evaluate 1\n";
-	else
-		s += "battle_evaluate 0\n";
-	if (this->bear_missile)
-		s += "bear_missile 1\n";
-	else
-		s += "bear_missile 0\n";
-	_file << s;
-	_file.close();
+	this->setPluginState("right_lock", this->right_lock);
+	this->setPluginState("damage_panel", this->damage_panel);
+	this->setPluginState("disable_speak", this->disable_speak);
+	this->setPluginState("night_speak", this->night_speak);
+	this->setPluginState("bear_missile", this->bear_missile);
+	this->setPluginState("battle_evaluate", this->battle_evaluate);
+
 }
 
 void CTankLoginPlusDlg::OnBnClickedCheck1()

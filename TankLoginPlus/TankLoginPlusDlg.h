@@ -4,6 +4,11 @@
 
 #pragma once
 #include "BaseAPI.h"
+#include "TankPlugin.h"
+#include "HttpHelper.h"
+#include <iostream>
+#include <sstream>
+#include <fstream>
 
 // CTankLoginPlusDlg 对话框
 class CTankLoginPlusDlg : public CDialogEx
@@ -60,9 +65,9 @@ private:
 
 	TCHAR current_path[MAX_PATH] = { 0 };
 
-	// 检查更新进度条
-	CProgressCtrl udpate_progress;
-	
+	BOOL getPluginState(std::string name);
+	void setPluginState(std::string name,BOOL state);
+
 	void InitPlugin();
 	void savePlugin();
 

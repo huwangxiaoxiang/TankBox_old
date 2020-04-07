@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 
 namespace TankFlow
 {
+    [Obsolete]
     class PCManager
     {
         private Object[] resources;
