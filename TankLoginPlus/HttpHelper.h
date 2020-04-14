@@ -19,9 +19,11 @@ public :
 
 	static std::wstring UTF8ToUnicode(const std::string& str);
 	
+	static std::string wstringTostring(const std::wstring& str);
 
 
 protected:
 	std::string socketHttp(std::string host, std::string request);
+
 };
 

@@ -39,9 +39,14 @@ namespace TankFlow
         {
             if (this.damages.Count > 0)
             {
-                string param = "param=" + this.getJSON();
-                string result=HttpConnect.HttpPost(HttpConnect.mBaseURL, param);
-                Console.WriteLine("上传" + this.damages.Count.ToString() + "条数据，" + (this.damages.Count - int.Parse(result)).ToString() + "条失败");
+                try
+                {
+                    string param = "param=" + this.getJSON();
+                    string result = HttpConnect.HttpPost(HttpConnect.mBaseURL+ "add_damage", param);
+                    Console.WriteLine("上传" + this.damages.Count.ToString() + "条数据，" + (this.damages.Count - int.Parse(result)).ToString() + "条失败");
+                }
+                catch (Exception e) { }
+                
             }
         }
 

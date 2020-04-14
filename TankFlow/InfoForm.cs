@@ -31,6 +31,8 @@ namespace TankFlow
         List<Damage> damage_list=new List<Damage>();
         Damage[] temp_damage = new Damage[6];
 
+        private int user_id = -1;
+
         public TankFlow()
         {
             InitializeComponent();
@@ -38,6 +40,11 @@ namespace TankFlow
             this.postimer.Stop();
             this.StartPosition = FormStartPosition.Manual;
             followPosition();
+        }
+
+        private void setUser(int user_id)
+        {
+            this.user_id = user_id;
         }
 
         //初始化窗口数据
@@ -113,18 +120,18 @@ namespace TankFlow
                 base.DefWndProc(ref m);
                 return;
             }
+            
             switch (m.Msg)
              {
                  case WM_COPYDATA:
                     string s1=getCopyMessage(ref m);
-                    Console.WriteLine("收到字符串：" + s1);
-                    Damage dama = new Damage(s1);
-                    if (dama.valid)
+                    Console.WriteLine("收到字符串：" +s1);
+                    ReceivedData data = new ReceivedData(s1);
+                    Thread th = new Thread(() =>
                     {
-                        damage_list.Add(dama);
-                        if(this.show_damage_panel)
-                            PushString(dama);
-                    }
+                        this.HandleCopyData(data);
+                    });
+                    th.Start();
                     break;
                 case EVENT:
                     OnHandleEvent((int)m.LParam);
@@ -135,7 +142,39 @@ namespace TankFlow
              }
              
         }
-        
+
+        private void HandleCopyData(ReceivedData data)
+        {
+            switch(data.dataKey)
+            {
+                case 1://坦克造成伤害
+                    Damage dama = new Damage(data.message);
+                    if (dama.valid)
+                    {
+                        damage_list.Add(dama);
+                        if (this.show_damage_panel)
+                            PushString(dama);
+                    }
+                    break;
+                case 2://战斗结果
+                    if (this.user_id == -1) return;
+                    BattleResult result = new BattleResult(this.user_id.ToString()+","+data.message);
+                    if (result.valid)
+                    {
+                        bool up_result=HttpConnect.UploadBattleResult(result);
+                        if (up_result) Console.WriteLine("上传战斗结果成功");
+                        else Console.WriteLine("上传战斗结果失败");
+                    }
+                    break;
+                case 3://设置user_id
+                    bool resu = int.TryParse(data.message, out this.user_id);
+                    if (!resu)
+                        this.user_id = -1;
+                    break;
+            }
+        }
+
+
         private void uploadData()
         {
             List<Damage> valid_damage = new List<Damage>();

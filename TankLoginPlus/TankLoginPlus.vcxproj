@@ -187,6 +187,7 @@
     </ResourceCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="AccountLoginDlg.h" />
     <ClInclude Include="BaseAPI.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="HttpHelper.h" />
@@ -198,6 +199,7 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="AccountLoginDlg.cpp" />
     <ClCompile Include="BaseAPI.cpp" />
     <ClCompile Include="HttpHelper.cpp" />
     <ClCompile Include="pch.cpp">

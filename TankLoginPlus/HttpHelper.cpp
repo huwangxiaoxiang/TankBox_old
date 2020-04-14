@@ -39,8 +39,9 @@ std::string HttpHelper::socketHttp(std::string host, std::string request)
 	}
 	else {
 		memcpy((char*)& address.sin_addr.s_addr, (char*)server->h_addr, server->h_length);
+		
 	}
-
+	
 	if (-1 == connect(sockfd, (struct sockaddr*) & address, sizeof(address))) {
 		OutputDebugString(L"连接服务器失败\n");
 		return "";
@@ -136,4 +137,19 @@ std::string HttpHelper::getData(std::string host, std::string path, std::string 
 		 std::cerr << e.what() << std::endl;
 	 }
 	 return ret;
+ }
+
+ std::string HttpHelper::wstringTostring(const std::wstring& wstr)
+ {
+	 std::string result;
+	 //获取缓冲区大小，并申请空间，缓冲区大小事按字节计算的  
+	 int len = WideCharToMultiByte(CP_ACP, 0, wstr.c_str(), wstr.size(), NULL, 0, NULL, NULL);
+	 char* buffer = new char[len + 1];
+	 //宽字节编码转换成多字节编码  
+	 WideCharToMultiByte(CP_ACP, 0, wstr.c_str(), wstr.size(), buffer, len, NULL, NULL);
+	 buffer[len] = '\0';
+	 //删除缓冲区并返回值  
+	 result.append(buffer);
+	 delete[] buffer;
+	 return result;
  }

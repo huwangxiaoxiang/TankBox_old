@@ -7,6 +7,7 @@
 #include "TankLoginPlus.h"
 #include "TankLoginPlusDlg.h"
 #include "afxdialogex.h"
+#include "AccountLoginDlg.h"
 
 
 
@@ -31,6 +32,7 @@ CTankLoginPlusDlg::CTankLoginPlusDlg(CWnd* pParent /*=nullptr*/)
 	, night_speak(TRUE)
 	, battle_evaluate(TRUE)
 	, bear_missile(TRUE)
+	, loginText(_T(""))
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDI_ICON5);
 }
@@ -47,6 +49,7 @@ void CTankLoginPlusDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Check(pDX, IDC_CHECK5, night_speak);
 	DDX_Check(pDX, IDC_CHECK6, battle_evaluate);
 	DDX_Check(pDX, IDC_CHECK7, bear_missile);
+	DDX_Text(pDX, IDC_LOGINTEXT, loginText);
 }
 
 BEGIN_MESSAGE_MAP(CTankLoginPlusDlg, CDialogEx)
@@ -62,6 +65,8 @@ BEGIN_MESSAGE_MAP(CTankLoginPlusDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_CHECK5, &CTankLoginPlusDlg::OnBnClickedCheck5)
 	ON_BN_CLICKED(IDC_CHECK6, &CTankLoginPlusDlg::OnBnClickedCheck6)
 	ON_BN_CLICKED(IDC_CHECK7, &CTankLoginPlusDlg::OnBnClickedCheck7)
+	ON_BN_CLICKED(IDC_BUTTON1, &CTankLoginPlusDlg::OnBnClickedLoginBtn)
+	ON_BN_CLICKED(IDC_BUTTON2, &CTankLoginPlusDlg::OnBnClickedForBattleResult)
 END_MESSAGE_MAP()
 
 
@@ -307,7 +312,6 @@ BOOL CTankLoginPlusDlg::startGames(LPTSTR ID, LPTSTR key, int serverID)
 		DeleteFile(csharp_dll);
 		int s=_trename(temp_dll, csharp_dll);
 	}
-	
 
 	HWND hwnd = findWindow();
 	::PostMessage(hwnd, 32770, 0, 0);
@@ -472,10 +476,46 @@ void CTankLoginPlusDlg::savePlugin()
 
 }
 
+void CTankLoginPlusDlg::setAccount(std::string id, std::string name)
+{
+	this->accountId = id;
+	this->accountName = name;
+	GetDlgItem(IDC_LOGINTEXT)->EnableWindow(true);
+	this->loginText = CStringW(name.c_str()) + L"  (ID: " + CStringW(id.c_str()) + L")   已登录";
+	
+}
+
+void CTankLoginPlusDlg::setLoginState(BOOL is_login)
+{
+	this->isLogin = is_login;
+	std::stringstream ss;
+	ss << "3 ";
+	if (isLogin) {
+		GetDlgItem(IDC_BUTTON1)->SetWindowTextW(L"注销");
+		GetDlgItem(IDC_LOGINTEXT)->EnableWindow(true);
+		ss << this->accountId.c_str();
+	}
+	else {
+		GetDlgItem(IDC_BUTTON1)->SetWindowTextW(L"登录");
+		GetDlgItem(IDC_LOGINTEXT)->EnableWindow(false);
+		this->loginText = L"未登录";
+		ss << "-1";
+	}
+	std::wstring m = HttpHelper::UTF8ToUnicode(ss.str());
+	HWND hwnd = findWindow();
+	COPYDATASTRUCT cds;
+	cds.dwData = 0;
+	cds.cbData = (lstrlen(m.c_str())) * sizeof(WCHAR);
+	cds.lpData = _malloca(cds.cbData);
+	if (cds.lpData != 0) {
+		lstrcpy((LPTSTR)cds.lpData, m.c_str());
+		int result = ::SendMessage(hwnd, WM_COPYDATA, NULL, (LPARAM)& cds);
+	}
+}
+
 void CTankLoginPlusDlg::OnBnClickedCheck1()
 {
 	UpdateData(true);
-	
 }
 
 
@@ -523,4 +563,34 @@ void CTankLoginPlusDlg::OnBnClickedCheck6()
 void CTankLoginPlusDlg::OnBnClickedCheck7()
 {
 	this->savePlugin();
+}
+
+
+void CTankLoginPlusDlg::OnBnClickedLoginBtn()
+{
+	if (this->isLogin) {
+		this->setLoginState(false);
+		this->UpdateData(false);
+	}
+	else {
+		AccountLoginDlg login(this);
+		login.DoModal();
+	}
+	
+}
+
+
+void CTankLoginPlusDlg::OnBnClickedForBattleResult()
+{
+	if (!isLogin) {
+		AccountLoginDlg login(this);
+		login.DoModal();
+	}
+	else {
+		std::stringstream ss;
+		ss << "http://localhost:8080/TankBox/battle_result.html?param=";
+		ss << this->accountId.c_str();
+		ShellExecute(NULL, _T("open"), HttpHelper::UTF8ToUnicode(ss.str()).c_str(), NULL,NULL, SW_SHOW);
+	}
+	
 }

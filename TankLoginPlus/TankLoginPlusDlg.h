@@ -34,6 +34,8 @@ protected:
 	virtual BOOL OnInitDialog();
 	afx_msg void OnPaint();
 	afx_msg HCURSOR OnQueryDragIcon();
+
+
 	BOOL checkDLL();
 	DECLARE_MESSAGE_MAP()
 	CString services[7] = { CString("华南一区"),CString("华东一区"),CString("华东二区"),CString("华南二区"),CString("华北一区"),CString("华东三区"),CString("华南三区") };
@@ -41,13 +43,16 @@ protected:
 	int service=-1;
 	LPTSTR id;
 	LPTSTR key;
+	std::string accountId;
+	std::string accountName;
+	BOOL isLogin;
+
 public:
 	CComboBox ServerBox;
 
 	afx_msg void OnBnClickedOk();
 	void Start();
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
-	BOOL startGame(LPTSTR ID, LPTSTR key, int serverID);
 	BOOL DirectGame(LPTSTR ID, LPTSTR key, int serverID);
 	BOOL is_common;
 
@@ -64,6 +69,7 @@ private:
 	BOOL update_check = FALSE;
 
 	TCHAR current_path[MAX_PATH] = { 0 };
+	BOOL pure_btn;
 
 	BOOL getPluginState(std::string name);
 	void setPluginState(std::string name,BOOL state);
@@ -72,7 +78,7 @@ private:
 	void savePlugin();
 
 public:
-	BOOL pure_btn;
+	
 	afx_msg void OnBnClickedCheck1();
 	afx_msg void OnClose();
 	
@@ -89,6 +95,8 @@ private:
 	BOOL battle_evaluate;
 	// 熊吼金币弹
 	BOOL bear_missile;
+
+
 public:
 	afx_msg void OnBnClickedCheck2();
 	afx_msg void OnBnClickedCheck3();
@@ -96,4 +104,12 @@ public:
 	afx_msg void OnBnClickedCheck5();
 	afx_msg void OnBnClickedCheck6();
 	afx_msg void OnBnClickedCheck7();
+	afx_msg void OnBnClickedLoginBtn();
+
+	void setAccount(std::string id, std::string name);
+	void setLoginState(BOOL is_login);
+private:
+	CString loginText;
+public:
+	afx_msg void OnBnClickedForBattleResult();
 };

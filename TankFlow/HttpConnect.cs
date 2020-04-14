@@ -1,4 +1,6 @@
 ﻿
+using System;
+using System.Collections.Generic;
 using System.IO;
 
 using System.Net;
@@ -9,7 +11,23 @@ namespace TankFlow
 {
     class HttpConnect
     {
-        public static readonly string mBaseURL = "http://www.bestxiaoxiang.top/Tank_Service_SSM/add_damage";
+        public static readonly string mBaseURL = "http://localhost:8080/Tank_Service_SSM/";
+
+        public static bool UploadBattleResult(BattleResult result)
+        {
+            string request = "add_battle_result";
+            Dictionary<string, object> dic = new Dictionary<string, object>();
+            dic.Add("user_id", result.user_id);
+            dic.Add("tank", result.tank);
+            dic.Add("modes", result.mode);
+            dic.Add("victory", result.victory); 
+            string param = GetJSONParam(dic);
+            //Console.WriteLine(param);
+            string response = HttpConnect.HttpPost(mBaseURL + request, param);
+            if (response == "0") return false;
+            else return true;
+
+        }
         public static string getParam(Damage damage)
         {
             string tempURL = mBaseURL;
@@ -22,6 +40,28 @@ namespace TankFlow
             json = json + "'battleid':" + damage.battleId.ToString() ;
             json = json + "}";
             return "param="+json;
+        }
+
+        public static string GetJSONParam(Dictionary<string, object> param)
+        {
+            string json = "{";
+            foreach (KeyValuePair<string, object> item in param)
+            {
+                json = json + "'" + item.Key + "':'" + item.Value + "',";
+            }
+            json = json + "}";
+            return "param=" + json;
+        }
+
+        public static string getParam(string user_id, string tank, string victory, int modes)
+        {
+            string json = "{";
+            json = json + "'user_id':'" + user_id + "',";
+            json = json + "'tank':'" + tank + "',";
+            json = json + "'victory':" + victory + ",";
+            json = json + "'modes':" + modes.ToString();
+            json = json + "}";
+            return "param=" + json;
         }
 
         public static string HttpGet(string URL)
