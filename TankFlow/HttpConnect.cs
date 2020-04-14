@@ -11,7 +11,7 @@ namespace TankFlow
 {
     class HttpConnect
     {
-        public static readonly string mBaseURL = "http://localhost:8080/Tank_Service_SSM/";
+        public static readonly string mBaseURL = "http://www.bestxiaoxiang.top/Tank_Service_SSM/";
 
         public static bool UploadBattleResult(BattleResult result)
         {

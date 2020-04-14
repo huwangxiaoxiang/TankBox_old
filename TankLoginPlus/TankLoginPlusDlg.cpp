@@ -481,7 +481,8 @@ void CTankLoginPlusDlg::setAccount(std::string id, std::string name)
 	this->accountId = id;
 	this->accountName = name;
 	GetDlgItem(IDC_LOGINTEXT)->EnableWindow(true);
-	this->loginText = CStringW(name.c_str()) + L"  (ID: " + CStringW(id.c_str()) + L")   已登录";
+	std::wstring m = HttpHelper::UTF8ToUnicode(name);
+	this->loginText = CStringW(m.c_str()) + L"  (ID: " + CStringW(id.c_str()) + L")   已登录";
 	
 }
 
@@ -588,7 +589,7 @@ void CTankLoginPlusDlg::OnBnClickedForBattleResult()
 	}
 	else {
 		std::stringstream ss;
-		ss << "http://localhost:8080/TankBox/battle_result.html?param=";
+		ss << "http://localhost:8080/TankBox/tank_data/battle_result.html?param=";
 		ss << this->accountId.c_str();
 		ShellExecute(NULL, _T("open"), HttpHelper::UTF8ToUnicode(ss.str()).c_str(), NULL,NULL, SW_SHOW);
 	}
