@@ -50,7 +50,7 @@ namespace TankFlow
             }
             catch(Exception e)
             {
-                Console.WriteLine(e.Message);
+                Log.AddLog(e.Message);
                 return false;
             }
         }
@@ -67,7 +67,7 @@ namespace TankFlow
             }
             catch(Exception e)
             {
-                Console.WriteLine(e.Message);
+                Log.AddLog(e.Message);
                 con = null;
                 return false;
             }
@@ -102,7 +102,7 @@ namespace TankFlow
             }catch(Exception e)
             {
                 Log.AddLog(e.Message+e.StackTrace);
-                Console.WriteLine("捕获到异常:"+e.StackTrace);
+                Log.AddLog("捕获到异常:"+e.StackTrace);
             }
             mutex.ReleaseMutex();
             return result;

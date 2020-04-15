@@ -2,6 +2,7 @@
 // Microsoft Visual C++ 生成的包含文件。
 // 供 TankLoginPlus.rc 使用
 //
+#define IDCANCEL2                       3
 #define IDD_TANKLOGINPLUS_DIALOG        102
 #define IDR_MAINFRAME                   128
 #define IDI_ICON5                       138

@@ -12,8 +12,7 @@ BEGIN_MESSAGE_MAP(AccountLoginDlg, CDialogEx)
 	ON_WM_QUERYDRAGICON()
 	ON_WM_CLOSE()
 	ON_BN_CLICKED(IDOK, &AccountLoginDlg::OnBnClickedLogin)
-	
-	ON_BN_CLICKED(IDCANCEL, &AccountLoginDlg::OnBnClickedRegiste)
+	ON_BN_CLICKED(IDCANCEL2, &AccountLoginDlg::OnBnClickedRegister)
 END_MESSAGE_MAP()
 
 AccountLoginDlg::AccountLoginDlg(CTankLoginPlusDlg* mainDlg,CWnd* pParent):
@@ -109,9 +108,7 @@ void AccountLoginDlg::OnBnClickedLogin()
 	}
 }
 
-
-
-void AccountLoginDlg::OnBnClickedRegiste()
+void AccountLoginDlg::OnBnClickedRegister()
 {
 	ShellExecute(NULL, _T("open"), L"https://www.bestxiaoxiang.top/tank_data/register.html", NULL, NULL, SW_SHOW);
 }

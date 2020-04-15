@@ -31,7 +31,7 @@ namespace TankFlow
                 f.ShowInTaskbar = false;
                 f.BackColor = System.Drawing.Color.Black;
                 f.TransparencyKey = f.BackColor; //让窗体透明 
-
+                Log.AddLog("TankFlow启动完成");
                 Application.Run(f);
             }
             else
@@ -59,7 +59,7 @@ namespace TankFlow
             {
                 this.dataKey = 0;
                 this.message = "";
-                Console.WriteLine(e.Message);
+                Log.AddLog(e.Message);
             }
         }
     }

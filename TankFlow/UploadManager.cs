@@ -43,7 +43,7 @@ namespace TankFlow
                 {
                     string param = "param=" + this.getJSON();
                     string result = HttpConnect.HttpPost(HttpConnect.mBaseURL+ "add_damage", param);
-                    Console.WriteLine("上传" + this.damages.Count.ToString() + "条数据，" + (this.damages.Count - int.Parse(result)).ToString() + "条失败");
+                    Log.AddLog("上传" + this.damages.Count.ToString() + "条数据，" + (this.damages.Count - int.Parse(result)).ToString() + "条失败");
                 }
                 catch (Exception e) { }
                 
@@ -73,7 +73,7 @@ namespace TankFlow
                 pack1.AddDamage(datas[i]);
             }
             packs.Add(pack1);
-            Console.WriteLine("将" + datas.Count.ToString() + "条数据分成了" + packs.Count.ToString() + "组");
+            Log.AddLog("将" + datas.Count.ToString() + "条数据分成了" + packs.Count.ToString() + "组");
         }
 
         public void Upload()

@@ -60,7 +60,7 @@ namespace TankFlow
                 temp_damage[i] = new Damage("");
             drawLabels();
             this.spot_state.Visible = false;
-            Log.AddLog("TankFlow启动完成");
+            
         }
 
         //添加字符串至窗口
@@ -126,7 +126,6 @@ namespace TankFlow
              {
                  case WM_COPYDATA:
                     string s1=getCopyMessage(ref m);
-                    Console.WriteLine("收到字符串：" +s1);
                     Log.AddLog("收到字符串:"+s1);
                     ReceivedData data = new ReceivedData(s1);
                     Thread th = new Thread(() =>
@@ -205,12 +204,12 @@ namespace TankFlow
                     initWindow();
                     this.Show();
                     this.postimer.Start();
-                    Console.WriteLine("战斗开始");
+                    Log.AddLog("战斗开始");
                     break;
                 case BATTLE_END:
                     this.postimer.Stop();
                     this.Hide();
-                    Console.WriteLine("战斗结束");
+                    Log.AddLog("战斗结束");
                     uploadData();
                     initWindow();
                     break;
@@ -229,7 +228,7 @@ namespace TankFlow
                     this.show_damage_panel = true;
                     break;
                 default:
-                    Console.WriteLine("未知消息类型："+flag);
+                    Log.AddLog("未知消息类型："+flag);
                     break;
             }
         }

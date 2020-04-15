@@ -32,7 +32,6 @@ private:
 	CString inputID;
 	CString inputPassword;
 public:
-	
-	afx_msg void OnBnClickedRegiste();
+	afx_msg void OnBnClickedRegister();
 };
 
