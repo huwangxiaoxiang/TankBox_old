@@ -589,7 +589,7 @@ void CTankLoginPlusDlg::OnBnClickedForBattleResult()
 	}
 	else {
 		std::stringstream ss;
-		ss << "http://www.bestxiaoxiang.top/TankBox/tank_data/battle_result.html?param=";
+		ss << "https://www.bestxiaoxiang.top/TankBox/tank_data/battle_result.html?param=";
 		ss << this->accountId.c_str();
 		ShellExecute(NULL, _T("open"), HttpHelper::UTF8ToUnicode(ss.str()).c_str(), NULL,NULL, SW_SHOW);
 	}

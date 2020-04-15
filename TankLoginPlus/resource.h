@@ -16,7 +16,6 @@
 #define IDC_CHECK7                      1010
 #define IDC_EDIT1                       1011
 #define IDC_EDIT2                       1013
-#define IDC_CHECK8                      1013
 #define IDC_BUTTON1                     1015
 #define IDC_BUTTON2                     1016
 #define IDC_LOGINTEXT                   1017
@@ -25,7 +24,7 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        143
+#define _APS_NEXT_RESOURCE_VALUE        145
 #define _APS_NEXT_COMMAND_VALUE         32771
 #define _APS_NEXT_CONTROL_VALUE         1018
 #define _APS_NEXT_SYMED_VALUE           101

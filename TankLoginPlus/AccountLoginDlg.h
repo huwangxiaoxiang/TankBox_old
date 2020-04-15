@@ -33,5 +33,6 @@ private:
 	CString inputPassword;
 public:
 	
+	afx_msg void OnBnClickedRegiste();
 };
 
