@@ -51,13 +51,15 @@ namespace TankFlow
         {
             try
             {
-                string[] temp = received_message.Split(' ');
-                this.dataKey = uint.Parse(temp[0]);
-                this.message = temp[1];
+                int pos = received_message.IndexOf(' ');
+                string index = received_message.Substring(0, pos);
+                this.dataKey = uint.Parse(index);
+                this.message = received_message.Substring(pos + 1, received_message.Length - pos-1);
             }catch(Exception e)
             {
                 this.dataKey = 0;
                 this.message = "";
+                Console.WriteLine(e.Message);
             }
         }
     }

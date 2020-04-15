@@ -60,6 +60,7 @@ namespace TankFlow
                 temp_damage[i] = new Damage("");
             drawLabels();
             this.spot_state.Visible = false;
+            Log.AddLog("TankFlow启动完成");
         }
 
         //添加字符串至窗口
@@ -126,6 +127,7 @@ namespace TankFlow
                  case WM_COPYDATA:
                     string s1=getCopyMessage(ref m);
                     Console.WriteLine("收到字符串：" +s1);
+                    Log.AddLog("收到字符串:"+s1);
                     ReceivedData data = new ReceivedData(s1);
                     Thread th = new Thread(() =>
                     {
@@ -161,15 +163,20 @@ namespace TankFlow
                     BattleResult result = new BattleResult(this.user_id.ToString()+","+data.message);
                     if (result.valid)
                     {
+                        Log.AddLog("开始上传战斗结果");
                         bool up_result=HttpConnect.UploadBattleResult(result);
-                        if (up_result) Console.WriteLine("上传战斗结果成功");
-                        else Console.WriteLine("上传战斗结果失败");
+                        if (up_result) Log.AddLog("上传战斗结果成功 "+result.tank);
+                        else Log.AddLog("上传战斗结果失败 "+result.tank);
                     }
                     break;
                 case 3://设置user_id
                     bool resu = int.TryParse(data.message, out this.user_id);
                     if (!resu)
                         this.user_id = -1;
+                    else
+                    {
+                        Log.AddLog("设置ID成功 " + this.user_id.ToString());
+                    }
                     break;
             }
         }
