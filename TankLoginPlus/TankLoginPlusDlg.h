@@ -77,6 +77,8 @@ private:
 	void InitPlugin();
 	void savePlugin();
 
+	BOOL mCheckBoxConfig();
+
 public:
 	
 	afx_msg void OnBnClickedCheck1();

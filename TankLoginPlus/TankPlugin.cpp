@@ -78,3 +78,8 @@ std::string TankPluginManager::getPluginState(std::string plugin_name)
 	}
 	return std::string();
 }
+
+void TankPluginManager::mSetConfigPath(LPTSTR path)
+{
+	TankPluginManager::config_path = path;
+}

@@ -42,7 +42,7 @@ namespace TankFlow
                 try
                 {
                     string param = "param=" + this.getJSON();
-                    string result = HttpConnect.HttpPost(HttpConnect.mBaseURL+ "add_damage", param);
+                    string result = HttpConnect.HttpPost("http://www.bestxiaoxiang.top/Tank_Service_SSM/" + "add_damage", param);
                     Log.AddLog("上传" + this.damages.Count.ToString() + "条数据，" + (this.damages.Count - int.Parse(result)).ToString() + "条失败");
                 }
                 catch (Exception e) { }
@@ -54,7 +54,7 @@ namespace TankFlow
     }
     class UploadManager
     {
-        private int perMagine = 20;
+        private int perMagine = 200;
         private List<uploadPack> packs = new List<uploadPack>();
         public UploadManager(List<Damage> datas)
         {

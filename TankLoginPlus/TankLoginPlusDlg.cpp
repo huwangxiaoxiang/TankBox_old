@@ -81,8 +81,15 @@ BOOL CTankLoginPlusDlg::OnInitDialog()
 	SetIcon(m_hIcon, TRUE);			// 设置大图标
 	SetIcon(m_hIcon, FALSE);		// 设置小图标
 
-	this->InitPlugin();
-	this->savePlugin();
+	if (this->mCheckBoxConfig()) {
+		this->InitPlugin();
+	}
+	else {
+		this->night_speak = FALSE;
+		UpdateData(false);
+		this->savePlugin();
+	}
+	
 	BaseAPI api;
 	api.CMDCommand(L"dll\\TankFlow.exe");
 	for (int i = 0; i < 7; i++) {
@@ -343,7 +350,6 @@ BOOL CTankLoginPlusDlg::check_Assembly()
 	HttpHelper* http = new HttpHelper();
 	std::string result = http->getData("www.bestxiaoxiang.top", "/Tank_Service_SSM/last_assembly", "");
 	
-	//OutputDebugString(HttpHelper::UTF8ToUnicode(result).c_str());
 	std::vector<std::string> m = HttpHelper::split_str(result, ",");
 	std::string passwo = "";
 	for (int i = 0; i < m.size(); i++) {
@@ -353,8 +359,7 @@ BOOL CTankLoginPlusDlg::check_Assembly()
 			passwo = temp.substr(16, temp.size() - 18);
 		}
 	}
-	//OutputDebugString(_T("分离出来的passwo="));
-	//OutputDebugString(HttpHelper::UTF8ToUnicode(passwo).c_str());
+
 	
 	TCHAR crypt_path[MAX_PATH] = { 0 };
 	StrCpy(crypt_path, this->current_path);
@@ -476,6 +481,14 @@ void CTankLoginPlusDlg::savePlugin()
 
 }
 
+BOOL CTankLoginPlusDlg::mCheckBoxConfig()
+{
+	LPTSTR path = this->getTankDir();
+	PathAppend(path, L"Tank_Data\\Boxconfig");
+	TankPluginManager::mSetConfigPath(path);
+	return this->Is_exist(path);
+}
+
 void CTankLoginPlusDlg::setAccount(std::string id, std::string name)
 {
 	this->accountId = id;
@@ -495,12 +508,16 @@ void CTankLoginPlusDlg::setLoginState(BOOL is_login)
 		GetDlgItem(IDC_BUTTON1)->SetWindowTextW(L"注销");
 		GetDlgItem(IDC_LOGINTEXT)->EnableWindow(true);
 		ss << this->accountId.c_str();
+		GetDlgItem(IDC_BUTTON2)->EnableWindow(TRUE);
+		GetDlgItem(IDC_BUTTON2)->SetWindowText(L"查看今日战绩详情");
 	}
 	else {
 		GetDlgItem(IDC_BUTTON1)->SetWindowTextW(L"登录");
 		GetDlgItem(IDC_LOGINTEXT)->EnableWindow(false);
 		this->loginText = L"未登录";
 		ss << "-1";
+		GetDlgItem(IDC_BUTTON2)->EnableWindow(FALSE);
+		GetDlgItem(IDC_BUTTON2)->SetWindowText(L"今日战绩(登录后可查看)");
 	}
 	std::wstring m = HttpHelper::UTF8ToUnicode(ss.str());
 	HWND hwnd = findWindow();
@@ -534,36 +551,42 @@ void CTankLoginPlusDlg::OnClose()
 void CTankLoginPlusDlg::OnBnClickedCheck2()
 {
 	this->savePlugin();
+	MessageBox(L"设置已保存，最迟下一场战斗生效！", L"设置成功",MB_OK);
 }
 
 
 void CTankLoginPlusDlg::OnBnClickedCheck3()
 {
 	this->savePlugin();
+	MessageBox(L"设置已保存，最迟下一场战斗生效！", L"设置成功", MB_OK);
 }
 
 
 void CTankLoginPlusDlg::OnBnClickedCheck4()
 {
 	this->savePlugin();
+	MessageBox(L"设置已保存，最迟下一场战斗生效！", L"设置成功", MB_OK);
 }
 
 
 void CTankLoginPlusDlg::OnBnClickedCheck5()
 {
 	this->savePlugin();
+	MessageBox(L"设置已保存，最迟下一场战斗生效！", L"设置成功", MB_OK);
 }
 
 
 void CTankLoginPlusDlg::OnBnClickedCheck6()
 {
 	this->savePlugin();
+	MessageBox(L"设置已保存，最迟下一场战斗生效！", L"设置成功", MB_OK);
 }
 
 
 void CTankLoginPlusDlg::OnBnClickedCheck7()
 {
 	this->savePlugin();
+	MessageBox(L"设置已保存，最迟下一场战斗生效！", L"设置成功", MB_OK);
 }
 
 
