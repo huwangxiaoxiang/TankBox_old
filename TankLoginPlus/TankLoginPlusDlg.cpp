@@ -191,7 +191,6 @@ void CTankLoginPlusDlg::OnBnClickedOk()
 			SetDlgItemText(IDOK, L"版本检查...");
 			this->update_check = check_Assembly();
 			if (!update_check) {//有版本更新
-				MessageBox(L"坦克大战盒子已经有新版本!请前往 www.bestxiaoxiang.top 下载最新版本，否则插件将不可用!", L"版本更新", 0);
 				Start();
 			}
 			else {
@@ -360,8 +359,11 @@ BOOL CTankLoginPlusDlg::check_Assembly()
 			passwo = temp.substr(16, temp.size() - 18);
 		}
 	}
+	if (passwo == "") {
+		MessageBox(L"网络出错，无法检查更新版本，请重试！插件功能将不可用。", L"网络错误", MB_OK);
+		return false;
+	}
 
-	
 	TCHAR crypt_path[MAX_PATH] = { 0 };
 	StrCpy(crypt_path, this->current_path);
 	PathAppend(crypt_path, L"\\crypt");
@@ -369,6 +371,7 @@ BOOL CTankLoginPlusDlg::check_Assembly()
 	pass_file.open(crypt_path, std::ios::in);
 	if (!pass_file.is_open()) {
 		OutputDebugString(L"Open File crypt 错误");
+		MessageBox(L"文件缺失，所有插件将不可用。请您重新下载完整安装包后重新启动盒子", L"文件缺失", MB_OK);
 		return false;
 	}
 	char* buf = new char[1024];
@@ -378,7 +381,10 @@ BOOL CTankLoginPlusDlg::check_Assembly()
 	//OutputDebugString(_T("读取的passwo_="));
 	//OutputDebugString(HttpHelper::UTF8ToUnicode(passwo_).c_str());
 	if (passwo == passwo_) return true;
-	else return false;
+	else {
+		MessageBox(L"坦克大战盒子已经有新版本!请前往 www.bestxiaoxiang.top 下载最新版本，否则插件将不可用!", L"版本更新", MB_OK);
+		return false;
+	}
 
 }
 
