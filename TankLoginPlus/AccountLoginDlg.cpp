@@ -19,6 +19,7 @@ AccountLoginDlg::AccountLoginDlg(CTankLoginPlusDlg* mainDlg,CWnd* pParent):
 	CDialogEx(IDD_LOGIN, pParent)
 	, inputID(_T(""))
 	, inputPassword(_T(""))
+	, mRememberAccount(TRUE)
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDI_ICON5);
 	this->mainDlg = mainDlg;
@@ -29,6 +30,7 @@ void AccountLoginDlg::DoDataExchange(CDataExchange* pDX)
 	CDialogEx::DoDataExchange(pDX);
 	DDX_Text(pDX, IDC_EDIT1, inputID);
 	DDX_Text(pDX, IDC_EDIT2, inputPassword);
+	DDX_Check(pDX, IDC_CHECK1, mRememberAccount);
 }
 
 BOOL AccountLoginDlg::OnInitDialog()
@@ -101,9 +103,16 @@ void AccountLoginDlg::OnBnClickedLogin()
 		std::string name = *(s.begin() + 2);
 		this->mainDlg->setAccount(id, name);
 		this->mainDlg->setLoginState(true);
-		
 		this->mainDlg->UpdateData(false);
-		
+	
+		UpdateData(true);
+		if (this->mRememberAccount) {
+			this->mainDlg->mSaveAccount(id,name);
+		}
+		else {
+			this->mainDlg->mSaveAccount("", "");
+		}
+
 		CDialogEx::OnOK();
 	}
 }

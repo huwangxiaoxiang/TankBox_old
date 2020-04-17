@@ -81,15 +81,6 @@ BOOL CTankLoginPlusDlg::OnInitDialog()
 	SetIcon(m_hIcon, TRUE);			// 设置大图标
 	SetIcon(m_hIcon, FALSE);		// 设置小图标
 
-	if (this->mCheckBoxConfig()) {
-		this->InitPlugin();
-	}
-	else {
-		this->night_speak = FALSE;
-		UpdateData(false);
-		this->savePlugin();
-	}
-	
 	BaseAPI api;
 	api.CMDCommand(L"dll\\TankFlow.exe");
 	for (int i = 0; i < 7; i++) {
@@ -98,7 +89,17 @@ BOOL CTankLoginPlusDlg::OnInitDialog()
 	if (!checkDLL()) {
 		exit(0);
 	}
-	this->update_check = this->check_Assembly();
+
+	if (this->mCheckBoxConfig()) {
+		this->InitPlugin();
+	}
+	else {
+		this->night_speak = FALSE;
+		UpdateData(false);
+		this->savePlugin();
+	}
+
+	this->mReadUserConfig();
 
 	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
 }
@@ -489,6 +490,46 @@ BOOL CTankLoginPlusDlg::mCheckBoxConfig()
 	return this->Is_exist(path);
 }
 
+void CTankLoginPlusDlg::mReadUserConfig()
+{
+	LPTSTR path = this->getTankDir();
+	PathAppend(path, L"Tank_Data\\userConfig");
+	if (!this->Is_exist(path)) return;
+
+	std::ifstream pass_file;
+	pass_file.open(path, std::ios::in);
+	if (!pass_file.is_open()) {
+		OutputDebugString(L"Open File userConfig 错误");
+		return;
+	}
+	std::string id;
+	std::string name;
+	try {
+		pass_file >> id;
+		pass_file >> name;
+		if (id == "") return;
+		this->setAccount(id, name);
+		this->setLoginState(TRUE);
+	}
+	catch (std::string ) {
+	}
+	pass_file.close();
+}
+
+void CTankLoginPlusDlg::mSaveAccount(std::string id, std::string name)
+{
+	LPTSTR path = this->getTankDir();
+	PathAppend(path, L"Tank_Data\\userConfig");
+
+	std::fstream _file;
+	_file.open(path, std::ios::out);
+	_file << id;
+	_file << " ";
+	_file << name;
+	_file.close();
+	
+}
+
 void CTankLoginPlusDlg::setAccount(std::string id, std::string name)
 {
 	this->accountId = id;
@@ -496,7 +537,10 @@ void CTankLoginPlusDlg::setAccount(std::string id, std::string name)
 	GetDlgItem(IDC_LOGINTEXT)->EnableWindow(true);
 	std::wstring m = HttpHelper::UTF8ToUnicode(name);
 	this->loginText = CStringW(m.c_str()) + L"  (ID: " + CStringW(id.c_str()) + L")   已登录";
-	
+	GetDlgItem(IDC_BUTTON2)->EnableWindow(true);
+	UpdateData(false);
+
+
 }
 
 void CTankLoginPlusDlg::setLoginState(BOOL is_login)

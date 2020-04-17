@@ -55,7 +55,7 @@ public:
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
 	BOOL DirectGame(LPTSTR ID, LPTSTR key, int serverID);
 	BOOL is_common;
-
+	void mSaveAccount(std::string id, std::string name);
 
 private:
 	LPTSTR GameStartCMD(LPTSTR ID, LPTSTR key, int serverID);
@@ -78,6 +78,9 @@ private:
 	void savePlugin();
 
 	BOOL mCheckBoxConfig();
+	void mReadUserConfig();
+
+	
 
 public:
 	
