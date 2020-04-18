@@ -645,6 +645,7 @@ void CTankLoginPlusDlg::OnBnClickedLoginBtn()
 	if (this->isLogin) {
 		this->setLoginState(false);
 		this->UpdateData(false);
+		this->mSaveAccount("", "");
 	}
 	else {
 		AccountLoginDlg login(this);

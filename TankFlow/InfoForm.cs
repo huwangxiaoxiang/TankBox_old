@@ -1,14 +1,8 @@
-﻿using MySql.Data.MySqlClient;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Linq;
 using System.Runtime.InteropServices;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 
@@ -87,7 +81,7 @@ namespace TankFlow
             {
                 Damage temp = temp_damage[i];
                 if (!temp.valid)
-                    return;
+                    continue;
                 Rectangle rect = new Rectangle(init.X + 1, init.Y + i * dy, width, height);
                 g.FillRectangle(back_brush, rect);
                 Color font_color,border_color;
@@ -128,11 +122,8 @@ namespace TankFlow
                     string s1=getCopyMessage(ref m);
                     Log.AddLog("收到字符串:"+s1);
                     ReceivedData data = new ReceivedData(s1);
-                    Thread th = new Thread(() =>
-                    {
-                        this.HandleCopyData(data);
-                    });
-                    th.Start();
+                    this.HandleCopyData(data);
+                    
                     break;
                 case EVENT:
                     OnHandleEvent((int)m.LParam);
@@ -162,10 +153,14 @@ namespace TankFlow
                     BattleResult result = new BattleResult(this.user_id.ToString()+","+data.message);
                     if (result.valid)
                     {
-                        Log.AddLog("开始上传战斗结果");
-                        bool up_result=HttpConnect.UploadBattleResult(result);
-                        if (up_result) Log.AddLog("上传战斗结果成功 "+result.tank);
-                        else Log.AddLog("上传战斗结果失败 "+result.tank);
+                        Thread th = new Thread(() =>
+                        {
+                            Log.AddLog("开始上传战斗结果");
+                            bool up_result = HttpConnect.UploadBattleResult(result);
+                            if (up_result) Log.AddLog("上传战斗结果成功 " + result.tank);
+                            else Log.AddLog("上传战斗结果失败 " + result.tank);
+                        });
+                        th.Start();
                     }
                     break;
                 case 3://设置user_id
@@ -186,7 +181,7 @@ namespace TankFlow
             List<Damage> valid_damage = new List<Damage>();
            foreach(Damage data in damage_list)
             {
-                if (data.valid)
+                if (data.valid&&data.grade>5)
                 {
                     valid_damage.Add(data);
                 }
@@ -216,7 +211,7 @@ namespace TankFlow
                 case SPOTED:
                     this.spot_state.Visible = true;
                     this.Show();
-                    //this.postimer.Start();
+                    this.postimer.Start();
                     break;
                 case UNSPOTED:
                     this.spot_state.Visible = false;

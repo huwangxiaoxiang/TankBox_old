@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace TankFlow
 {
@@ -16,6 +13,7 @@ namespace TankFlow
         public int battleId;
         public bool valid = true;
         public bool friend=false;
+        public int grade = 8;
         
        public string GetDamageType()
         {
@@ -52,6 +50,11 @@ namespace TankFlow
 
         public Damage(string s)
         {
+            if (s == "")
+            {
+                this.valid = false;
+                return;
+            }
             try
             {
                 string[] mm = s.Split(',');
@@ -69,6 +72,7 @@ namespace TankFlow
                 valid = true;
                 if (type == 17)
                     valid = false;
+                grade = int.Parse(mm[8]);
             }
             catch(Exception)
             {
