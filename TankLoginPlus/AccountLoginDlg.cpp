@@ -121,3 +121,5 @@ void AccountLoginDlg::OnBnClickedRegister()
 {
 	ShellExecute(NULL, _T("open"), L"https://www.bestxiaoxiang.top/tank_data/register.html", NULL, NULL, SW_SHOW);
 }
+
+

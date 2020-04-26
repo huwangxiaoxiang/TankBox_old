@@ -35,5 +35,7 @@ public:
 	afx_msg void OnBnClickedRegister();
 private:
 	BOOL mRememberAccount;
+public:
+	afx_msg void OnCbnSelchangeMissile();
 };
 

@@ -27,6 +27,7 @@ namespace TankFlow
                 f.BackColor = System.Drawing.Color.Black;
                 f.TransparencyKey = f.BackColor; //让窗体透明 
                 Log.AddLog("TankFlow启动完成");
+                //Test m = new Test();
                 Application.Run(f);
             }
             else
@@ -88,7 +89,6 @@ namespace TankFlow
                 {
                     valid = false;
                 }
-                
             }
         }
     }

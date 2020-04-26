@@ -18,6 +18,10 @@ namespace TankFlow
         const int UNSPOTED = 36280;
         const int DISABLE_PANEL = 36282;
         const int ENALBE_PANEL = 36283;
+        const int STARTRECOGNIZE = 36284;
+        const int STOPRECOGNIZE = 36285;
+
+
         const string GameClass = "UnityWndClass";
         const string GameName = "Tank Battle";
         bool is_lock = true;
@@ -27,6 +31,12 @@ namespace TankFlow
 
         private int user_id = -1;
 
+        public SocketClient python_client;
+        public SocketClient tank_client;
+
+        private float rec_alpha=0;
+        private string rec_text = "正在识别...";
+
         public TankFlow()
         {
             InitializeComponent();
@@ -34,6 +44,16 @@ namespace TankFlow
             this.postimer.Stop();
             this.StartPosition = FormStartPosition.Manual;
             followPosition();
+            this.user_id = -1;
+        }
+
+        public void HandleRecognizeResult(string result,int type)
+        {
+            if (type == 2)
+            {
+                this.recognizeTimer.Stop();
+                this.clearRec();
+            }
         }
 
         private void setUser(int user_id)
@@ -54,7 +74,7 @@ namespace TankFlow
                 temp_damage[i] = new Damage("");
             drawLabels();
             this.spot_state.Visible = false;
-            
+           
         }
 
         //添加字符串至窗口
@@ -99,6 +119,46 @@ namespace TankFlow
                 GDIDraw.Paint_Text(temp.GetDamageType(), rect, font_color, border_color, g, 14f);
                
             }
+            g.Dispose();
+            back_brush.Dispose();
+        }
+
+        private void drawRec(int alpha)
+        {
+            Rectangle rect = new Rectangle(95, 0, 36, 39);
+            Graphics g = this.CreateGraphics();
+            Brush back_brush = new SolidBrush(this.BackColor);
+            g.FillRectangle(back_brush, rect);
+
+            Color border_color = Color.FromArgb(10, 0, 0);
+            Color font_color = Color.FromArgb(alpha, 80, 215, 120);
+            GDIDraw.Paint_Text("●", rect, font_color, border_color, g, 25f);
+
+            g.Dispose();
+            back_brush.Dispose();
+            this.drawRecText();
+
+        }
+
+        public void drawRecText()
+        {
+            Graphics g = this.CreateGraphics();
+            Brush back_brush = new SolidBrush(this.BackColor);
+            Color border_color = Color.FromArgb(10, 0, 0);
+            Rectangle rect2 = new Rectangle(120, 10, 400, 19);
+            g.FillRectangle(back_brush, rect2);
+            Color font_color2 = Color.FromArgb(80, 215, 120);
+            GDIDraw.Paint_Text(this.rec_text, rect2, font_color2, border_color, g, 14f);
+            g.Dispose();
+            back_brush.Dispose();
+        }
+
+        public void clearRec()
+        {
+            Graphics g = this.CreateGraphics();
+            Brush back_brush = new SolidBrush(this.BackColor);
+            Rectangle rect2 = new Rectangle(0, 0, 500, 40);
+            g.FillRectangle(back_brush, rect2);
             g.Dispose();
             back_brush.Dispose();
         }
@@ -149,19 +209,19 @@ namespace TankFlow
                     }
                     break;
                 case 2://战斗结果
-                    if (this.user_id == -1) return;
-                    BattleResult result = new BattleResult(this.user_id.ToString()+","+data.message);
-                    if (result.valid)
-                    {
-                        Thread th = new Thread(() =>
+                        if (this.user_id != -1)
                         {
-                            Log.AddLog("开始上传战斗结果");
-                            bool up_result = HttpConnect.UploadBattleResult(result);
-                            if (up_result) Log.AddLog("上传战斗结果成功 " + result.tank);
-                            else Log.AddLog("上传战斗结果失败 " + result.tank);
-                        });
-                        th.Start();
-                    }
+                            BattleResult result = new BattleResult(this.user_id.ToString() + "," + data.message);
+                            if (result.valid)
+                            {
+                                Thread th = new Thread(this.uploadBattleResult);
+                                th.Start(result);
+                            }
+                        }
+                        else
+                        {
+                            Log.AddLog("user_id=-1的时候");
+                        }
                     break;
                 case 3://设置user_id
                     bool resu = int.TryParse(data.message, out this.user_id);
@@ -175,6 +235,14 @@ namespace TankFlow
             }
         }
 
+        private void uploadBattleResult(object data)
+        {
+            BattleResult result = (BattleResult)data;
+            Log.AddLog("开始上传战斗结果");
+            bool up_result = HttpConnect.UploadBattleResult(result);
+            if (up_result) Log.AddLog("上传战斗结果成功 " + result.tank);
+            else Log.AddLog("上传战斗结果失败 " + result.tank);
+        }
 
         private void uploadData()
         {
@@ -200,6 +268,14 @@ namespace TankFlow
                     this.Show();
                     this.postimer.Start();
                     Log.AddLog("战斗开始");
+                    new Thread(() =>
+                    {
+                        this.python_client = new SocketClient(34567,"127.0.0.1", new ClientReceiver(this));
+                        this.tank_client = new SocketClient(3457,"127.0.0.1", new ClientReceiver(this));
+                        this.python_client.ConnectServer();
+                        this.tank_client.ConnectServer();
+                        this.python_client.SendData("start_record");
+                    }).Start();
                     break;
                 case BATTLE_END:
                     this.postimer.Stop();
@@ -207,6 +283,18 @@ namespace TankFlow
                     Log.AddLog("战斗结束");
                     uploadData();
                     initWindow();
+                    this.clearRec();
+                    this.recognizeTimer.Stop();
+                    new Thread(() =>
+                    {
+                        if (python_client != null)
+                        {
+                            python_client.SendData("stop_record");
+                            this.python_client.DisConnect();
+                        }
+                        if(this.tank_client!=null)
+                            this.tank_client.DisConnect();
+                    }).Start();
                     break;
                 case SPOTED:
                     this.spot_state.Visible = true;
@@ -221,6 +309,24 @@ namespace TankFlow
                     break;
                 case ENALBE_PANEL:
                     this.show_damage_panel = true;
+                    break;
+                case STARTRECOGNIZE:
+                    Log.AddLog("开始语音识别...");
+                    if (python_client != null)
+                    {
+                        python_client.SendData("start_recognize");
+                        this.rec_text = "正在识别...";
+                        this.recognizeTimer.Start();
+                    }
+                    break;
+                case STOPRECOGNIZE:
+                    Log.AddLog("结束语音识别...");
+                    if (python_client != null)
+                    {
+                        python_client.SendData("stop_recognize");
+                    }
+                    this.recognizeTimer.Stop();
+                    this.clearRec();
                     break;
                 default:
                     Log.AddLog("未知消息类型："+flag);
@@ -279,6 +385,18 @@ namespace TankFlow
         private void TankFlow_FormClosed(object sender, FormClosedEventArgs e)
         {
             Application.Exit();
+        }
+
+        private void RecognizeTimer_Tick(object sender, EventArgs e)
+        {
+            int alp = 0;
+            if (this.rec_alpha > 3.1415f)
+            {
+                this.rec_alpha -= 3.1415f;
+            }
+            alp = (int)(255 * Math.Sin(this.rec_alpha));
+            this.drawRec(alp);
+            this.rec_alpha += 0.3f;
         }
     }
 }

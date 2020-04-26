@@ -37,6 +37,7 @@
             this.label5 = new System.Windows.Forms.Label();
             this.postimer = new System.Windows.Forms.Timer(this.components);
             this.spot_state = new System.Windows.Forms.Label();
+            this.recognizeTimer = new System.Windows.Forms.Timer(this.components);
             this.SuspendLayout();
             // 
             // label1
@@ -121,6 +122,10 @@
             this.spot_state.Text = "已被点亮";
             this.spot_state.Visible = false;
             // 
+            // recognizeTimer
+            // 
+            this.recognizeTimer.Tick += new System.EventHandler(this.RecognizeTimer_Tick);
+            // 
             // TankFlow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -152,5 +157,6 @@
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.Timer postimer;
         private System.Windows.Forms.Label spot_state;
+        private System.Windows.Forms.Timer recognizeTimer;
     }
 }

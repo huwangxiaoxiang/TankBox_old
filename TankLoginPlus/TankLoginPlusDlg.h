@@ -39,6 +39,7 @@ protected:
 	BOOL checkDLL();
 	DECLARE_MESSAGE_MAP()
 	CString services[7] = { CString("华南一区"),CString("华东一区"),CString("华东二区"),CString("华南二区"),CString("华北一区"),CString("华东三区"),CString("华南三区") };
+	CString missiles[7] = { CString("银币弹"),CString("普通金币弹"),CString("军团金币弹"),CString("龙腾金币弹"),CString("虎啸金币弹"),CString("熊吼金币弹"),CString("领主金币弹") };
 	BaseAPI api;
 	int service=-1;
 	LPTSTR id;
@@ -117,4 +118,20 @@ private:
 	CString loginText;
 public:
 	afx_msg void OnBnClickedForBattleResult();
+	BOOL disable_chat;
+	afx_msg void OnBnClickedDisableChat();
+	afx_msg void OnBnClickedCheck9();
+private:
+	BOOL audio_recognize;
+public:
+	afx_msg void OnBnClickedCheck10();
+	afx_msg void OnBnClickedCheck11();
+private:
+	BOOL red_point;
+protected:
+	BOOL safe_distance;
+private:
+	CComboBox missile_kind;
+public:
+	afx_msg void OnCbnSelchangeMissile();
 };

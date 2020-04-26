@@ -83,3 +83,15 @@ void TankPluginManager::mSetConfigPath(LPTSTR path)
 {
 	TankPluginManager::config_path = path;
 }
+
+BOOL TankPluginManager::hasPlugin(std::string plugin_name)
+{
+	bool result = false;
+	for (std::vector<TankPlugin>::iterator i = TankPluginManager::plugins.begin(); i != TankPluginManager::plugins.end(); i++) {
+		if (i->plugin_name == plugin_name) {
+			result = true;
+			break;
+		}
+	}
+	return result;
+}

@@ -33,6 +33,10 @@ CTankLoginPlusDlg::CTankLoginPlusDlg(CWnd* pParent /*=nullptr*/)
 	, battle_evaluate(TRUE)
 	, bear_missile(TRUE)
 	, loginText(_T(""))
+	, disable_chat(FALSE)
+	, audio_recognize(FALSE)
+	, red_point(TRUE)
+	, safe_distance(TRUE)
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDI_ICON5);
 }
@@ -50,6 +54,11 @@ void CTankLoginPlusDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Check(pDX, IDC_CHECK6, battle_evaluate);
 	DDX_Check(pDX, IDC_CHECK7, bear_missile);
 	DDX_Text(pDX, IDC_LOGINTEXT, loginText);
+	DDX_Check(pDX, IDC_CHECK8, disable_chat);
+	DDX_Check(pDX, IDC_CHECK9, audio_recognize);
+	DDX_Check(pDX, IDC_CHECK10, red_point);
+	DDX_Check(pDX, IDC_CHECK11, safe_distance);
+	DDX_Control(pDX, IDC_COMBO2, missile_kind);
 }
 
 BEGIN_MESSAGE_MAP(CTankLoginPlusDlg, CDialogEx)
@@ -67,6 +76,11 @@ BEGIN_MESSAGE_MAP(CTankLoginPlusDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_CHECK7, &CTankLoginPlusDlg::OnBnClickedCheck7)
 	ON_BN_CLICKED(IDC_BUTTON1, &CTankLoginPlusDlg::OnBnClickedLoginBtn)
 	ON_BN_CLICKED(IDC_BUTTON2, &CTankLoginPlusDlg::OnBnClickedForBattleResult)
+	ON_BN_CLICKED(IDC_CHECK8, &CTankLoginPlusDlg::OnBnClickedDisableChat)
+	ON_BN_CLICKED(IDC_CHECK9, &CTankLoginPlusDlg::OnBnClickedCheck9)
+	ON_BN_CLICKED(IDC_CHECK10, &CTankLoginPlusDlg::OnBnClickedCheck10)
+	ON_BN_CLICKED(IDC_CHECK11, &CTankLoginPlusDlg::OnBnClickedCheck11)
+	ON_CBN_SELCHANGE(IDC_COMBO2, &CTankLoginPlusDlg::OnCbnSelchangeMissile)
 END_MESSAGE_MAP()
 
 
@@ -83,9 +97,14 @@ BOOL CTankLoginPlusDlg::OnInitDialog()
 
 	BaseAPI api;
 	api.CMDCommand(L"dll\\TankFlow.exe");
+	api.CMDCommand(L"dll\\Audio.exe");
 	for (int i = 0; i < 7; i++) {
 		ServerBox.AddString(services[i]);
 	}
+	for (int i = 0; i < 7; i++) {
+		missile_kind.AddString(missiles[i]);
+	}
+
 	if (!checkDLL()) {
 		exit(0);
 	}
@@ -95,12 +114,14 @@ BOOL CTankLoginPlusDlg::OnInitDialog()
 	}
 	else {
 		this->night_speak = FALSE;
+		this->disable_chat = FALSE;
+		this->audio_recognize = TRUE;
 		UpdateData(false);
 		this->savePlugin();
 	}
 
 	this->mReadUserConfig();
-
+	
 	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
 }
 
@@ -329,8 +350,11 @@ HWND CTankLoginPlusDlg::findWindow() {
 	CWnd* window = FindWindow(L"WindowsForms10.Window.8.app.0.141b42a_r6_ad1", L"TankFlow");
 	if (!window) {
 		window = FindWindow(L"WindowsForms10.Window.8.app.0.141b42a_r8_ad1", L"TankFlow");
-		if (!window)
-			return NULL;
+		if (!window) {
+			window = FindWindow(L"WindowsForms10.Window.8.app.0.2bf8098_r25_ad1", L"TankFlow");
+			if (!window)
+				return NULL;
+		}
 	}
 	return window->GetSafeHwnd();
 }
@@ -469,6 +493,47 @@ void CTankLoginPlusDlg::InitPlugin()
 	this->night_speak = this->getPluginState("night_speak");
 	this->bear_missile = this->getPluginState("bear_missile");
 	this->battle_evaluate = this->getPluginState("battle_evaluate");
+	if (TankPluginManager::hasPlugin("disable_chat")) {
+		this->disable_chat = this->getPluginState("disable_chat");
+	}
+	else {
+		this->disable_chat = false;
+		this->setPluginState("disable_chat", false);
+	}
+
+	if (TankPluginManager::hasPlugin("audio_recognize")) {
+		this->audio_recognize = this->getPluginState("audio_recognize");
+	}
+	else {
+		this->audio_recognize = true;
+		this->setPluginState("audio_recognize",true);
+	}
+
+	if (TankPluginManager::hasPlugin("red_point")) {
+		this->red_point = this->getPluginState("red_point");
+	}
+	else {
+		this->red_point = true;
+		this->setPluginState("red_point", true);
+	}
+
+	if (TankPluginManager::hasPlugin("safe_distance")) {
+		this->safe_distance = this->getPluginState("safe_distance");
+	}
+	else {
+		this->safe_distance = true;
+		this->setPluginState("safe_distance", true);
+	}
+
+	if (TankPluginManager::hasPlugin("missile_kind")) {
+		std::string text = TankPluginManager::getPluginState("missile_kind");
+		OutputDebugStringA(text.c_str());
+		this->missile_kind.SetCurSel(std::atoi(text.c_str()) - 1);
+	}
+	else {
+		this->missile_kind.SetCurSel(6);
+		TankPluginManager::setPlugin("missile_kind", "7");
+	}
 
 	UpdateData(false);
 }
@@ -485,6 +550,12 @@ void CTankLoginPlusDlg::savePlugin()
 	this->setPluginState("night_speak", this->night_speak);
 	this->setPluginState("bear_missile", this->bear_missile);
 	this->setPluginState("battle_evaluate", this->battle_evaluate);
+	this->setPluginState("disable_chat",this->disable_chat);
+	this->setPluginState("audio_recognize", this->audio_recognize);
+	this->setPluginState("red_point", this->red_point);
+	this->setPluginState("safe_distance", this->safe_distance);
+
+	TankPluginManager::setPlugin("missile_kind", std::to_string(this->missile_kind.GetCurSel()+1));      
 
 }
 
@@ -594,6 +665,8 @@ void CTankLoginPlusDlg::OnClose()
 	BaseAPI api;
 	api.CMDCommand(L"taskkill /F /im TankFlow.exe");
 	api.CMDCommand(L"taskkill /F /im TankFlow.exe");
+	api.CMDCommand(L"taskkill /F /im Audio.exe");
+	api.CMDCommand(L"taskkill /F /im Audio.exe");
 	CDialogEx::OnClose();
 }
 
@@ -668,4 +741,39 @@ void CTankLoginPlusDlg::OnBnClickedForBattleResult()
 		ShellExecute(NULL, _T("open"), HttpHelper::UTF8ToUnicode(ss.str()).c_str(), NULL,NULL, SW_SHOW);
 	}
 	
+}
+
+
+void CTankLoginPlusDlg::OnBnClickedDisableChat()
+{
+	this->savePlugin();
+	MessageBox(L"设置已保存，最迟下一场战斗生效！", L"设置成功", MB_OK);
+}
+
+
+void CTankLoginPlusDlg::OnBnClickedCheck9()
+{
+	this->savePlugin();
+	MessageBox(L"设置已保存，最迟下一场战斗生效！", L"设置成功", MB_OK);
+}
+
+
+void CTankLoginPlusDlg::OnBnClickedCheck10()
+{
+	this->savePlugin();
+	MessageBox(L"设置已保存，最迟下一场战斗生效！", L"设置成功", MB_OK);
+}
+
+
+void CTankLoginPlusDlg::OnBnClickedCheck11()
+{
+	this->savePlugin();
+	MessageBox(L"设置已保存，最迟下一场战斗生效！", L"设置成功", MB_OK);
+}
+
+
+void CTankLoginPlusDlg::OnCbnSelchangeMissile()
+{
+	this->savePlugin();
+	MessageBox(L"设置已保存，最迟下一场战斗生效！", L"设置成功", MB_OK);
 }

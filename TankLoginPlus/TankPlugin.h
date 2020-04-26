@@ -22,5 +22,7 @@ public:
 	static void setPlugin(std::string plugin_name, std::string state);
 	static std::string getPluginState(std::string plugin_name);
 	static void mSetConfigPath(LPTSTR path);
+	static BOOL hasPlugin(std::string plugin_name);
+
 };
 
