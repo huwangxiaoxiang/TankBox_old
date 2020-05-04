@@ -1,178 +1,69 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace TankFlow
 {
 
-    public abstract class  Receiver
+    public abstract class Receiver
     {
-        abstract public void OnReceiveMessage(string host,string message);
+        abstract public void OnReceiveMessage(string host, string message);
         abstract public void OnReceiveConnect(string host);
         abstract public void OnBreakConnect(string host);
+        abstract public void OnCompleteReceive(string host);
     }
 
 
-    class ServerReceiver : Receiver
-    {
-        public override void OnReceiveMessage(string host, string message)
-        {
-            Log.AddLog("收到来自" + host + "的消息(ReceiveMessage)：" + message);
-            /*
-            string[] strs = message.Split('_');
-            if (strs.Length != 2)
-                return;
-            if (strs[0] == "1"&&strs[1]!="")
-            {
-                GUIEntityBattleChat entityone = GUISystem.Instance.GetEntity<GUIEntityBattleChat>();
-                entityone.SendBattleChatMessage(strs[1], BattleChatChannel.BCC_TEAM);
-            }
-            */
-
-        }
-        public override void OnReceiveConnect(string host)
-        {
-            Log.AddLog("收到来自" + host + "的连接(ReceiveConnect)" );
-        }
-
-        public override void OnBreakConnect(string host)
-        {
-            Log.AddLog(host + "连接已断开(BreakConnect)");
-        }
-    }
-
-    class ClientReceiver : Receiver
-    {
-        TankFlow window;
-        /**/
-        public ClientReceiver(TankFlow window)
-        {
-           
-            this.window = window;
-        }
-        
-        public override void OnBreakConnect(string host)
-        {
-            Log.AddLog("与服务器:" + host + "的连接断开");
-        }
-
-        public override void OnReceiveConnect(string host)
-        {
-            Log.AddLog("与服务器:" + host + "连接");
-        }
-
-        public override void OnReceiveMessage(string host, string message)
-        {
-            /**/
-            Log.AddLog("收到服务器"+host+"的消息:" + message);
-            string[] strs = message.Split('_');
-            if (strs.Length < 2) return;
-            if (strs[0] == "1")
-            {
-                window.HandleRecognizeResult(strs[1],1);
-            }
-            if (strs[0] == "2")
-            {
-                Log.AddLog("准备向游戏客户端发送数据:" + "1_" + strs[1]);
-                this.window.tank_client.SendData("1_" + strs[1]);
-                window.HandleRecognizeResult(strs[1],2);
-            }
-            
-        }
-    }
 
     class SocketManager
     {
-        private static Dictionary<string, long> status = new Dictionary<string, long>();
+        private static Mutex socket_mutex = new Mutex();
+
         private static Dictionary<string, Socket> clients = new Dictionary<string, Socket>();
-        private static Thread protect_thread;
-        
+
         private static SocketServer server;
-        private static bool protect_exit = false;
-        public static void addSocket(string ip,Socket socket)
+        public static void addSocket(string ip, Socket socket)
         {
-            status.Add(ip, DateTime.Now.Ticks);
-            clients.Add(ip,socket);
-        }
-        private static void StartKeepAlive()
-        {
-            if (protect_thread != null)
-            {
-                return;
-            }
-            protect_thread = new Thread(KeepAlive);
-            protect_exit = false;
-            protect_thread.Start();
-        }
-        private static void StopKeepAlive()
-        {
-            protect_exit = true;
-            if (protect_thread != null)
-            {
-                Log.AddLog("等待服务端守护线程关闭...");
-                protect_thread.Join();
-            }
-            protect_thread = null;
-            string message = "0 close";
-            foreach(KeyValuePair<string,Socket> item in clients)
-            {
-                item.Value.Send(Encoding.UTF8.GetBytes(message));
-                item.Value.Close();
-            }
-            clients.Clear();
-            status.Clear();
-            Log.AddLog("服务端守护线程已关闭");
-        }
-        private static void KeepAlive()
-        {
-            Log.AddLog("服务端Socket守护线程已开启");
-            while (!protect_exit)
-            {
-                long now = DateTime.Now.Ticks;
-                foreach(KeyValuePair<string,long> item in status)
-                {
-                    long delta = now - item.Value;
-                    if ( delta> 10* 10000000)//大于10秒没有数据通信则关闭该Socket
-                    {
-                        clients[item.Key].Close();
-                        clients.Remove(item.Key);
-                        status.Remove(item.Key);
-                        break;
-                    }
-                }
-                Thread.Sleep(2000);
-            }
-        }
-        public static void ReportMessage(string ip)
-        {
-            if (status.ContainsKey(ip))
-            {
-                status[ip] = DateTime.Now.Ticks;
-            }
+            socket_mutex.WaitOne();
+            clients.Add(ip, socket);
+            socket_mutex.ReleaseMutex();
         }
 
-        public static void StartServer(int port,Receiver receiver)
+        public static void StartServer(int port, Receiver receiver, bool localIP = true)
         {
             if (SocketManager.server != null) return;
-            SocketManager.StartKeepAlive();
-            SocketServer server = new SocketServer(port, receiver);
+            SocketServer server = new SocketServer(port, receiver, localIP);
             server.StartListen();
             SocketManager.server = server;
-            
+        }
+
+        public static void CloseConnect(string host)
+        {
+            Socket client = GetClientSocket(host);
+            client.Close();
+            socket_mutex.WaitOne();
+            clients.Remove(host);
+            socket_mutex.ReleaseMutex();
+
         }
 
         public static void StopServer()
         {
-            StopKeepAlive();
+            foreach (string item in clients.Keys)
+            {
+                clients[item].Close();
+            }
             if (server != null)
             {
                 server.CloseServer();
             }
+            socket_mutex.WaitOne();
+            clients.Clear();
+            socket_mutex.ReleaseMutex();
+
             SocketManager.server = null;
         }
         public static Socket GetClientSocket(string ip)
@@ -180,13 +71,24 @@ namespace TankFlow
             if (clients.ContainsKey(ip)) return clients[ip];
             else return null;
         }
-        
-        public static void SendData(string ip,string message)
+
+        public static int SendData(string ip, string message)
         {
             Socket socket = GetClientSocket(ip);
             if (socket != null)
-                socket.Send(Encoding.UTF8.GetBytes(message));
+                return socket.Send(Encoding.UTF8.GetBytes(message));
+            else return 0;
         }
+
+        public static int SendByte(string ip, byte[] buffer, int size)
+        {
+            Socket socket = GetClientSocket(ip);
+            if (socket != null)
+                return socket.Send(buffer, size, SocketFlags.None);
+            else return 0;
+        }
+
+
     }
 
     public class SocketServer
@@ -194,7 +96,7 @@ namespace TankFlow
         private string _ip = string.Empty;
         private int _port = 0;
         private Socket _socket = null;
-        private byte[] buffer = new byte[1024 * 1024 * 2];
+        private byte[] buffer = new byte[1024 * 1024];
         private bool close = false;
         private Receiver mMessageReceiver = null;
 
@@ -215,9 +117,19 @@ namespace TankFlow
             catch { return ""; }
         }
 
-        public SocketServer(int port,Receiver receiver)
+        public SocketServer(int port, Receiver receiver, bool localIP)
         {
-            this._ip = "127.0.0.1";
+            if (localIP)
+                this._ip = GetLocalIP();
+            else
+                this._ip = "127.0.0.1";
+            this._port = port;
+            this.mMessageReceiver = receiver;
+        }
+
+        public SocketServer(int port, string ip, Receiver receiver)
+        {
+            this._ip = ip;
             this._port = port;
             this.mMessageReceiver = receiver;
         }
@@ -249,14 +161,14 @@ namespace TankFlow
             }
             catch (Exception ex)
             {
-                Log.AddLog("服务端开启失败");
+                Log.AddLog("服务端开启失败:" + ex.Message);
             }
         }
-   
+
         private void ListenClientConnect()
         {
             while (!this.close)
-             {
+            {
                 try
                 {
                     //Socket创建的新连接
@@ -277,7 +189,7 @@ namespace TankFlow
                 _socket.Close();
             }
             catch { }
-            
+
             Log.AddLog("服务端监听已关闭");
         }
 
@@ -289,17 +201,24 @@ namespace TankFlow
             {
                 try
                 {
-                    int length = clientSocket.Receive(buffer);
-                    string message = Encoding.UTF8.GetString(buffer, 0, length);
-                    if (message == "0 alive")
+                    string message = "";
+                    int length_sum = 0;
+                    do
                     {
-                        SocketManager.ReportMessage(clientIp);
-                        continue;
-                    }
-                    if (message=="") break;
-                    int index = message.IndexOf(' ');
-                    if(this.mMessageReceiver!=null&&message.Length>2)
-                        mMessageReceiver.OnReceiveMessage(clientIp, message.Substring(index+1,message.Length-index-1));
+                        int length = clientSocket.Receive(buffer);
+                        if (length == 0) break;
+                        length_sum += length;
+                        message += Encoding.UTF8.GetString(buffer, 0, length);
+                        if (length < 1024 * 1024)
+                        {
+                            this.mMessageReceiver.OnCompleteReceive(clientIp);
+                            break;
+                        }
+                    } while (true);
+
+                    if (length_sum == 0) break;
+                    Log.AddLog("服务端收到消息:" + message);
+                    mMessageReceiver.OnReceiveMessage(clientIp, message);
                 }
                 catch (Exception ex)
                 {
@@ -311,6 +230,7 @@ namespace TankFlow
             mMessageReceiver.OnBreakConnect(clientIp);
             Log.AddLog("客户端" + clientIp + "的连接已断开");
         }
+
     }
 
     public class SocketClient
@@ -320,23 +240,54 @@ namespace TankFlow
         private Socket _socket = null;
         private byte[] buffer = new byte[1024 * 1024 * 2];
         private bool close = false;
-        private Receiver mMessageReceiver;
+        private uint messageType = 0;//0代表string型的数据，1代表byte型的数据
+        private string remoteIp = string.Empty;
 
-        public SocketClient(int port,Receiver receiver)
-        {
-            this._ip = SocketServer.GetLocalIP();
-            this._port = port;
-            this.mMessageReceiver = receiver;
-        }
 
-        public SocketClient(int port,string ip, Receiver receiver)
+        public SocketClient(int port, string ip, uint type = 0)
         {
             this._ip = ip;
             this._port = port;
-            this.mMessageReceiver = receiver;
+            this.messageType = type;
         }
 
-        public void ConnectServer()
+        public string GetRemoteIP()
+        {
+            return this.remoteIp;
+        }
+
+        public int GetPort()
+        {
+            return this._port;
+        }
+
+        protected virtual void OnReceiveMessage(string message)
+        {
+
+        }
+
+        protected virtual void OnReceiveByte(byte[] buffer, int length)
+        {
+
+        }
+
+        protected virtual void OnCompleteReceive()
+        {
+
+        }
+
+        protected virtual void OnConnectBroken()
+        {
+
+        }
+
+        protected virtual void OnConnectEstablish()
+        {
+
+        }
+
+
+        public bool ConnectServer()
         {
             try
             {
@@ -351,97 +302,92 @@ namespace TankFlow
                 IPEndPoint endPoint = new IPEndPoint(address, _port);
                 //4.0 建立连接
                 _socket.Connect(endPoint);
-                this.mMessageReceiver.OnReceiveConnect(_socket.RemoteEndPoint.ToString());
-                this.KeepAlive();//保持连接
+                this.remoteIp = _socket.RemoteEndPoint.ToString();
+                this.OnConnectEstablish();
                 Thread s = new Thread(OnReceive);
                 s.Start();
-               
+
             }
             catch (Exception ex)
             {
                 _socket.Close();
                 Console.WriteLine(ex.Message);
+                return false;
             }
-            
+            return true;
         }
 
         public void DisConnect()
         {
-            if(_socket!=null)
+            if (_socket != null)
                 _socket.Close();
             this.close = true;
         }
 
         public void SendData(string s)
         {
+            byte[] buffer = Encoding.UTF8.GetBytes(s);
+            this.SendByte(buffer, buffer.Length);
+        }
+
+        public void SendByte(byte[] data, int size)
+        {
             try
             {
-                _socket.Send(Encoding.UTF8.GetBytes("1 "+s));
+                _socket.Send(data, size, SocketFlags.None);
             }
-            catch (Exception ex)
+            catch (Exception e)
             {
-                Log.AddLog("消息发送失败:" + s);
+                Log.AddLog("byte消息发送失败:" + e.Message);
             }
         }
 
-        public void OnReceive()
+        private void OnReceive()
         {
-            string remoteIp = _socket.RemoteEndPoint.ToString();
             while (!this.close)
             {
                 if (this._socket == null) break;
                 try
                 {
-                    int length = _socket.Receive(buffer);
-                    if (length == 0) break;
-                    string message = Encoding.UTF8.GetString(buffer, 0, length);
-                    if (message == "0 close")
+                    string message = "";
+                    int length_sum = 0;
+                    do
                     {
-                        this.close = true;
-                    }
-                    else{
-                        mMessageReceiver.OnReceiveMessage(remoteIp,message);
-                    }
-                   // Log.AddLog("收到服务端消息:" + Encoding.UTF8.GetString(buffer, 0, length));
-                }catch(Exception e)
+                        int length = _socket.Receive(buffer);
+                        if (length == 0) break;
+                        if (this.messageType == 1)
+                            this.OnReceiveByte(buffer, length);
+                        else if (this.messageType == 0)
+                            message += Encoding.UTF8.GetString(buffer, 0, length);
+                        length_sum += length;
+                        if (length < 1024 * 1024 * 2)
+                        {
+                            this.OnCompleteReceive();
+                            break;
+                        }
+
+                    } while (true);
+
+                    if (length_sum == 0) break;
+                    if (this.messageType == 0)
+                        this.OnReceiveMessage(message);
+
+                    // Log.AddLog("收到服务端消息:" + Encoding.UTF8.GetString(buffer, 0, length));
+                }
+                catch (Exception e)
                 {
                     this.close = true;
+                    Console.WriteLine(e.Message);
                     break;
                 }
             }
-            if(this._socket!=null)
-                   this._socket.Close();
-            mMessageReceiver.OnBreakConnect(remoteIp);
+            if (this._socket != null)
+                this._socket.Close();
+            this.OnConnectBroken();
+            this._socket = null;
             Log.AddLog("[客户端]与服务端的连接已断开");
         }
 
-        private void KeepAlive()
-        {
-            Thread th = new Thread(() =>
-            {
-                String ip = _socket.RemoteEndPoint.ToString();
-                while (!close)
-                {
-                    if (_socket == null)
-                    {
-                        this.close = true;
-                        break;
-                    }
-                    try
-                    {
-                        _socket.Send(Encoding.UTF8.GetBytes("0 alive"));
-                    }catch(Exception e)
-                    {
-                        this.close = true;
-                        this._socket = null;
-                        break;
-                    }
-                    Thread.Sleep(4000);
-                }
-               
-            });
-            th.Start();
-        }
     }
 
 }

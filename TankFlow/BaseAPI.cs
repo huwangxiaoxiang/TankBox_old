@@ -6,10 +6,10 @@ namespace TankFlow
 {
     public class BaseAPI
     {
-       [DllImport("user32.dll")]
-       public static extern IntPtr FindWindow(string lpClassName, string lpWindowName);
-       [DllImport("user32.dll")]
-       public static extern int GetWindowRect(IntPtr hwnd, out RECT lpRect);
+        [DllImport("user32.dll")]
+        public static extern IntPtr FindWindow(string lpClassName, string lpWindowName);
+        [DllImport("user32.dll")]
+        public static extern int GetWindowRect(IntPtr hwnd, out RECT lpRect);
         [DllImport("user32.dll")]
         public static extern int GetClientRect(IntPtr hwnd, out RECT lpRect);
         [StructLayout(LayoutKind.Sequential)]

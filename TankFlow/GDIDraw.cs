@@ -30,7 +30,7 @@ namespace TankFlow
 
         }
 
- 
+
 
         private static GraphicsPath GetStringPath(string s, float dpi, RectangleF rect, Font font, StringFormat format)
         {

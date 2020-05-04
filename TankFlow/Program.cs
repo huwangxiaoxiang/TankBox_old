@@ -38,7 +38,7 @@ namespace TankFlow
         }
     }
 
-    class ReceivedData
+    public class ReceivedData
     {
         public uint dataKey;
 
@@ -50,24 +50,25 @@ namespace TankFlow
                 int pos = received_message.IndexOf(' ');
                 string index = received_message.Substring(0, pos);
                 this.dataKey = uint.Parse(index);
-                this.message = received_message.Substring(pos + 1, received_message.Length - pos-1);
-            }catch(Exception e)
+                this.message = received_message.Substring(pos + 1, received_message.Length - pos - 1);
+            }
+            catch (Exception e)
             {
                 this.dataKey = 0;
                 this.message = "";
-                Log.AddLog(e.Message);
+                Log.AddLog("ReceivedData字符串解析失败!" + e.Message);
             }
         }
     }
 
-    class BattleResult
+    public class BattleResult
     {
         public string user_id;
         public string tank;
         public string victory;
         public string mode;
         public bool valid = false;
-        public string honor ="0";
+        public string honor = "0";
         public string shoot = "0";
         public string hits = "0";
         public string penertration = "0";
@@ -75,11 +76,11 @@ namespace TankFlow
         public string hits_received = "0";
         public string damage_received = "0";
         public string enermy_detected = "0";
-       
+
         public BattleResult(string data)
         {
             string[] temp = data.Split(',');
-            if (temp.Length >=12)
+            if (temp.Length >= 12)
             {
                 user_id = temp[0];
                 tank = temp[1];
@@ -102,7 +103,8 @@ namespace TankFlow
                 {
                     victory = "0";
                     valid = true;
-                }else
+                }
+                else
                 {
                     valid = false;
                 }

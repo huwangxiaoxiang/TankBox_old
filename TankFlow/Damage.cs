@@ -4,18 +4,18 @@ namespace TankFlow
 {
     public class Damage
     {
-        public string source="";
-        public string victim="";
+        public string source = "";
+        public string victim = "";
         public int damage;//潜在伤害
         public int type;
         public int victimId;
         public int battleType;
         public int battleId;
         public bool valid = true;
-        public bool friend=false;
+        public bool friend = false;
         public int grade = 8;
-        
-       public string GetDamageType()
+
+        public string GetDamageType()
         {
             switch (type)
             {
@@ -36,7 +36,8 @@ namespace TankFlow
 
         string GetBattleType()
         {
-            switch (battleType){
+            switch (battleType)
+            {
                 case 0:
                     return "标准模式";
                 case 1:
@@ -74,7 +75,7 @@ namespace TankFlow
                     valid = false;
                 grade = int.Parse(mm[8]);
             }
-            catch(Exception)
+            catch (Exception)
             {
                 valid = false;
             }
@@ -85,14 +86,14 @@ namespace TankFlow
             string result = "";
             if (damage > 0)
             {
-                result = fillspace(10,source) + "  ->  " + fillspace(10,victim);
-                result = result + "    "+ GetDamageType();
+                result = fillspace(10, source) + "  ->  " + fillspace(10, victim);
+                result = result + "    " + GetDamageType();
             }
-            
+
             return result;
         }
 
-        public string fillspace(int sum,string source)
+        public string fillspace(int sum, string source)
         {
             int length = source.Length;
             for (; length < sum; length++)

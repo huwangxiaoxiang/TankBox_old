@@ -26,16 +26,19 @@ namespace TankFlow
         const string GameName = "Tank Battle";
         bool is_lock = true;
         bool show_damage_panel = true;
-        List<Damage> damage_list=new List<Damage>();
+        List<Damage> damage_list = new List<Damage>();
         Damage[] temp_damage = new Damage[6];
 
         private int user_id = -1;
 
         public SocketClient python_client;
-        public SocketClient tank_client;
 
-        private float rec_alpha=0;
+        private float rec_alpha = 0;
         private string rec_text = "正在识别...";
+        private string tank_client;
+
+
+
 
         public TankFlow()
         {
@@ -43,17 +46,22 @@ namespace TankFlow
             initWindow();
             this.postimer.Stop();
             this.StartPosition = FormStartPosition.Manual;
-            //followPosition();
+            followPosition();
             this.user_id = -1;
-            
+            SocketManager.StartServer(10824, new MessageReceiver(this), false);
         }
 
-        public void HandleRecognizeResult(string result,int type)
+        public void HandleRecognizeResult(string result, int type)
         {
             if (type == 2)
             {
-                this.recognizeTimer.Stop();
-                this.clearRec();
+                SocketManager.SendData(this.tank_client, "1_" + result);
+                MethodInvoker mi = new MethodInvoker(() =>
+                {
+                    this.recognizeTimer.Stop();
+                    this.clearRec();
+                });
+                this.BeginInvoke(mi);
             }
         }
 
@@ -75,7 +83,7 @@ namespace TankFlow
                 temp_damage[i] = new Damage("");
             drawLabels();
             this.spot_state.Visible = false;
-           
+
         }
 
         //添加字符串至窗口
@@ -105,20 +113,20 @@ namespace TankFlow
                     continue;
                 Rectangle rect = new Rectangle(init.X + 1, init.Y + i * dy, width, height);
                 g.FillRectangle(back_brush, rect);
-                Color font_color,border_color;
+                Color font_color, border_color;
                 border_color = Color.FromArgb(10, 0, 0);
                 if (temp_damage[i].friend)
                     font_color = Color.FromArgb(80, 215, 120);
                 else
                     font_color = Color.FromArgb(239, 32, 0);
-                GDIDraw.Paint_Text(temp.fillspace(10,temp.source),rect,font_color,border_color,g, 14f);
+                GDIDraw.Paint_Text(temp.fillspace(10, temp.source), rect, font_color, border_color, g, 14f);
                 rect.Offset(115, 0);
                 GDIDraw.Paint_Text("->", rect, font_color, border_color, g, 14f);
                 rect.Offset(30, 0);
                 GDIDraw.Paint_Text(temp.fillspace(10, temp.victim), rect, font_color, border_color, g, 14f);
                 rect.Offset(115, 0);
                 GDIDraw.Paint_Text(temp.GetDamageType(), rect, font_color, border_color, g, 14f);
-               
+
             }
             g.Dispose();
             back_brush.Dispose();
@@ -168,7 +176,7 @@ namespace TankFlow
         /**/
         protected override void DefWndProc(ref System.Windows.Forms.Message m)
         {
-            is_lock = false;
+            is_lock = true;
             if (m.Msg == 32770)
                 is_lock = false;
             if (is_lock)
@@ -176,40 +184,43 @@ namespace TankFlow
                 base.DefWndProc(ref m);
                 return;
             }
-            
+
             switch (m.Msg)
-             {
-                 case WM_COPYDATA:
-                    string s1=getCopyMessage(ref m);
-                    Log.AddLog("收到字符串:"+s1);
+            {
+                case WM_COPYDATA:
+                    string s1 = getCopyMessage(ref m);
+                    Log.AddLog("收到字符串:" + s1);
                     ReceivedData data = new ReceivedData(s1);
-                    this.HandleCopyData(data);
-                    
+                    //this.HandleCopyData(data);
+
                     break;
                 case EVENT:
                     OnHandleEvent((int)m.LParam);
                     break;
                 default:
-                     base.DefWndProc(ref m);
+                    base.DefWndProc(ref m);
                     break;
-             }
-             
+            }
+
         }
 
-        private void HandleCopyData(ReceivedData data)
+        public void HandleCopyData(string host, ReceivedData data)
         {
-            switch(data.dataKey)
+            this.tank_client = host;
+            MethodInvoker mi = new MethodInvoker(() =>
             {
-                case 1://坦克造成伤害
-                    Damage dama = new Damage(data.message);
-                    if (dama.valid)
-                    {
-                        damage_list.Add(dama);
-                        if (this.show_damage_panel)
-                            PushString(dama);
-                    }
-                    break;
-                case 2://战斗结果
+                switch (data.dataKey)
+                {
+                    case 1://坦克造成伤害
+                        Damage dama = new Damage(data.message);
+                        if (dama.valid)
+                        {
+                            damage_list.Add(dama);
+                            if (this.show_damage_panel)
+                                PushString(dama);
+                        }
+                        break;
+                    case 2://战斗结果
                         if (this.user_id != -1)
                         {
                             BattleResult result = new BattleResult(this.user_id.ToString() + "," + data.message);
@@ -223,17 +234,25 @@ namespace TankFlow
                         {
                             Log.AddLog("user_id=-1的时候");
                         }
-                    break;
-                case 3://设置user_id
-                    bool resu = int.TryParse(data.message, out this.user_id);
-                    if (!resu)
-                        this.user_id = -1;
-                    else
-                    {
-                        Log.AddLog("设置ID成功 " + this.user_id.ToString());
-                    }
-                    break;
-            }
+                        break;
+                    case 3://设置user_id
+                        bool resu = int.TryParse(data.message, out this.user_id);
+                        if (!resu)
+                            this.user_id = -1;
+                        else
+                        {
+                            Log.AddLog("设置ID成功 " + this.user_id.ToString());
+                        }
+                        break;
+                    case 4:
+                        int flag = int.Parse(data.message);
+                        this.OnHandleEvent(flag);
+                        break;
+                }
+            });
+            this.BeginInvoke(mi);
+
+
         }
 
         private void uploadBattleResult(object data)
@@ -248,9 +267,9 @@ namespace TankFlow
         private void uploadData()
         {
             List<Damage> valid_damage = new List<Damage>();
-           foreach(Damage data in damage_list)
+            foreach (Damage data in damage_list)
             {
-                if (data.valid&&data.grade>5)
+                if (data.valid && data.grade > 5)
                 {
                     valid_damage.Add(data);
                 }
@@ -271,11 +290,9 @@ namespace TankFlow
                     Log.AddLog("战斗开始");
                     new Thread(() =>
                     {
-                        this.python_client = new SocketClient(34567,"127.0.0.1", new ClientReceiver(this));
-                        this.tank_client = new SocketClient(3457,"127.0.0.1", new ClientReceiver(this));
+                        this.python_client = new PythonClient(34567, "127.0.0.1", this);
                         this.python_client.ConnectServer();
-                        this.tank_client.ConnectServer();
-                        this.python_client.SendData("start_record");
+                        this.python_client.SendData("1 start_record");
                     }).Start();
                     break;
                 case BATTLE_END:
@@ -290,11 +307,10 @@ namespace TankFlow
                     {
                         if (python_client != null)
                         {
-                            python_client.SendData("stop_record");
+                            python_client.SendData("1 stop_record");
                             this.python_client.DisConnect();
                         }
-                        if(this.tank_client!=null)
-                            this.tank_client.DisConnect();
+
                     }).Start();
                     break;
                 case SPOTED:
@@ -315,7 +331,7 @@ namespace TankFlow
                     Log.AddLog("开始语音识别...");
                     if (python_client != null)
                     {
-                        python_client.SendData("start_recognize");
+                        python_client.SendData("1 start_recognize");
                         this.rec_text = "正在识别...";
                         this.recognizeTimer.Start();
                     }
@@ -324,13 +340,13 @@ namespace TankFlow
                     Log.AddLog("结束语音识别...");
                     if (python_client != null)
                     {
-                        python_client.SendData("stop_recognize");
+                        python_client.SendData("1 stop_recognize");
                     }
                     this.recognizeTimer.Stop();
                     this.clearRec();
                     break;
                 default:
-                    Log.AddLog("未知消息类型："+flag);
+                    Log.AddLog("未知消息类型：" + flag);
                     break;
             }
         }
@@ -374,13 +390,13 @@ namespace TankFlow
             IntPtr forgeWindow = BaseAPI.GetForegroundWindow();
             if (hwnd != forgeWindow)
             {
-                this.Location = new System.Drawing.Point(-300,-300);
+                this.Location = new System.Drawing.Point(-300, -300);
                 return;
             }
-          this.TopMost = true;
-          BaseAPI.RECT client;
-          BaseAPI.GetWindowRect(hwnd, out client);
-          this.Location = new System.Drawing.Point((int)(client.Left + 165), (int)(client.Bottom - 220));
+            this.TopMost = true;
+            BaseAPI.RECT client;
+            BaseAPI.GetWindowRect(hwnd, out client);
+            this.Location = new System.Drawing.Point((int)(client.Left + 165), (int)(client.Bottom - 220));
         }
 
         private void TankFlow_FormClosed(object sender, FormClosedEventArgs e)

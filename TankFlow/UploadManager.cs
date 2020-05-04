@@ -17,7 +17,7 @@ namespace TankFlow
         private string getJSON()
         {
             string result = "[";
-            foreach(Damage damage in damages)
+            foreach (Damage damage in damages)
             {
                 string json = "{";
                 json = json + "'attacker':'" + damage.source + "',";
@@ -44,11 +44,11 @@ namespace TankFlow
                     Log.AddLog("上传" + this.damages.Count.ToString() + "条数据，" + (this.damages.Count - int.Parse(result)).ToString() + "条失败");
                 }
                 catch (Exception e) { }
-                
+
             }
         }
 
-     
+
     }
     class UploadManager
     {
@@ -58,7 +58,7 @@ namespace TankFlow
         {
             if (datas.Count <= 0) return;
             int m = (int)(datas.Count / this.perMagine) + 1;//将数据分组
-            for(int i = 0; i < m - 1; i++)
+            for (int i = 0; i < m - 1; i++)
             {
                 uploadPack pack = new uploadPack();
                 for (int j = 0; j < perMagine; j++)
@@ -77,7 +77,7 @@ namespace TankFlow
         public void Upload()
         {
             if (this.packs.Count <= 0) return;
-            foreach(uploadPack pack in packs)
+            foreach (uploadPack pack in packs)
             {
                 Thread th = new Thread(() =>
                 {

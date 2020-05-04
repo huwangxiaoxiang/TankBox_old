@@ -1,11 +1,8 @@
-﻿
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 
 using System.Net;
 using System.Text;
-using System.Web;
 
 namespace TankFlow
 {
@@ -41,13 +38,13 @@ namespace TankFlow
             string tempURL = mBaseURL;
             string json = "{";
             json = json + "'attacke':'" + damage.source + "',";
-            json=  json + "'victim':'" + damage.victim +"',";
-            json = json+ "'damage':" + damage.damage.ToString() + ",";
+            json = json + "'victim':'" + damage.victim + "',";
+            json = json + "'damage':" + damage.damage.ToString() + ",";
             json = json + "'damagetype':" + damage.type.ToString() + ",";
             json = json + "'battletype':" + damage.battleType.ToString() + ",";
-            json = json + "'battleid':" + damage.battleId.ToString() ;
+            json = json + "'battleid':" + damage.battleId.ToString();
             json = json + "}";
-            return "param="+json;
+            return "param=" + json;
         }
 
         public static string GetJSONParam(Dictionary<string, object> param)
