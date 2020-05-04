@@ -8,6 +8,7 @@
 #include "TankLoginPlusDlg.h"
 #include "afxdialogex.h"
 #include "AccountLoginDlg.h"
+#include "BoxReceiver.h"
 
 
 
@@ -162,7 +163,7 @@ HCURSOR CTankLoginPlusDlg::OnQueryDragIcon()
 }
 
 BOOL CTankLoginPlusDlg::checkDLL() {
-	
+	return TRUE;
 	TCHAR dll_path[MAX_PATH] = { 0 };
 	TCHAR target_path[MAX_PATH] = { 0 };
 	LPTSTR tankdir = getTankDir();
@@ -643,6 +644,12 @@ void CTankLoginPlusDlg::setLoginState(BOOL is_login)
 		GetDlgItem(IDC_BUTTON2)->EnableWindow(FALSE);
 		GetDlgItem(IDC_BUTTON2)->SetWindowText(L"今日战绩(登录后可查看)");
 	}
+
+	BoxReceiver tankflow = BoxReceiver();
+	tankflow.ConnectServer();
+	tankflow.SendData("3 " + ss.str());
+	tankflow.DisConnect();
+	/*
 	std::wstring m = HttpHelper::UTF8ToUnicode(ss.str());
 	HWND hwnd = findWindow();
 	COPYDATASTRUCT cds;
@@ -653,6 +660,7 @@ void CTankLoginPlusDlg::setLoginState(BOOL is_login)
 		lstrcpy((LPTSTR)cds.lpData, m.c_str());
 		int result = ::SendMessage(hwnd, WM_COPYDATA, NULL, (LPARAM)& cds);
 	}
+	*/
 }
 
 void CTankLoginPlusDlg::OnBnClickedCheck1()

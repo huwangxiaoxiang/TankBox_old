@@ -45,6 +45,12 @@
     <ClInclude Include="AccountLoginDlg.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="SocketClient.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="BoxReceiver.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="TankLoginPlus.cpp">
@@ -66,6 +72,12 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="AccountLoginDlg.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="SocketClient.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="BoxReceiver.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

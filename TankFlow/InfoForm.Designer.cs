@@ -1,4 +1,7 @@
-﻿namespace TankFlow
+﻿using System.IO;
+using System.Windows.Forms;
+
+namespace TankFlow
 {
     partial class TankFlow
     {

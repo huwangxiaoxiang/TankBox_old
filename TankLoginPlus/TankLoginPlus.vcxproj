@@ -101,6 +101,7 @@
       <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
+      <UACExecutionLevel>RequireAdministrator</UACExecutionLevel>
     </Link>
     <Midl>
       <MkTypLibCompatible>false</MkTypLibCompatible>
@@ -189,10 +190,12 @@
   <ItemGroup>
     <ClInclude Include="AccountLoginDlg.h" />
     <ClInclude Include="BaseAPI.h" />
+    <ClInclude Include="BoxReceiver.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="HttpHelper.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="Resource.h" />
+    <ClInclude Include="SocketClient.h" />
     <ClInclude Include="TankLoginPlus.h" />
     <ClInclude Include="TankLoginPlusDlg.h" />
     <ClInclude Include="TankPlugin.h" />
@@ -201,6 +204,7 @@
   <ItemGroup>
     <ClCompile Include="AccountLoginDlg.cpp" />
     <ClCompile Include="BaseAPI.cpp" />
+    <ClCompile Include="BoxReceiver.cpp" />
     <ClCompile Include="HttpHelper.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
@@ -208,6 +212,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="SocketClient.cpp" />
     <ClCompile Include="TankLoginPlus.cpp" />
     <ClCompile Include="TankLoginPlusDlg.cpp" />
     <ClCompile Include="TankPlugin.cpp" />
