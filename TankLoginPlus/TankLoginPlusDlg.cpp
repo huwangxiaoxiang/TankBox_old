@@ -352,8 +352,11 @@ HWND CTankLoginPlusDlg::findWindow() {
 		window = FindWindow(L"WindowsForms10.Window.8.app.0.141b42a_r8_ad1", L"TankFlow");
 		if (!window) {
 			window = FindWindow(L"WindowsForms10.Window.8.app.0.2bf8098_r25_ad1", L"TankFlow");
-			if (!window)
-				return NULL;
+			if (!window) {
+				window = FindWindow(L"WindowsForms10.Window.8.app.0.141b42a_r12_ad1", L"TankFlow");
+				if (!window)
+					return NULL;
+			}
 		}
 	}
 	return window->GetSafeHwnd();

@@ -216,6 +216,7 @@
     <ResourceCompile Include="TankLoginPlus.rc" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="crypt" />
     <None Include="res\TankLoginPlus.rc2" />
   </ItemGroup>
   <ItemGroup>

@@ -78,6 +78,9 @@
     <None Include="res\TankLoginPlus.rc2">
       <Filter>资源文件</Filter>
     </None>
+    <None Include="crypt">
+      <Filter>资源文件</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\TankLoginPlus.ico">

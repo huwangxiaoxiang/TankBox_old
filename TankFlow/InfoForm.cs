@@ -43,8 +43,9 @@ namespace TankFlow
             initWindow();
             this.postimer.Stop();
             this.StartPosition = FormStartPosition.Manual;
-            followPosition();
+            //followPosition();
             this.user_id = -1;
+            
         }
 
         public void HandleRecognizeResult(string result,int type)

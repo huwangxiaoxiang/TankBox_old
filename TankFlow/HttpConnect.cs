@@ -15,12 +15,20 @@ namespace TankFlow
 
         public static bool UploadBattleResult(BattleResult result)
         {
-            string request = "add_battle_result";
+            string request = "add_battle_result2";
             Dictionary<string, object> dic = new Dictionary<string, object>();
             dic.Add("user_id", result.user_id);
             dic.Add("tank", result.tank);
             dic.Add("modes", result.mode);
-            dic.Add("victory", result.victory); 
+            dic.Add("victory", result.victory);
+            dic.Add("honor", result.honor);
+            dic.Add("shoot", result.shoot);
+            dic.Add("hits", result.hits);
+            dic.Add("penertration", result.penertration);
+            dic.Add("damage_caused", result.damage_caused);
+            dic.Add("hits_received", result.hits_received);
+            dic.Add("damage_received", result.damage_received);
+            dic.Add("enermy_detected", result.enermy_detected);
             string param = GetJSONParam(dic);
             //Console.WriteLine(param);
             string response = HttpConnect.HttpPost(mBaseURL + request, param);

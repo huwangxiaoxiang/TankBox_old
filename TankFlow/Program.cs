@@ -67,23 +67,40 @@ namespace TankFlow
         public string victory;
         public string mode;
         public bool valid = false;
+        public string honor ="0";
+        public string shoot = "0";
+        public string hits = "0";
+        public string penertration = "0";
+        public string damage_caused = "0";
+        public string hits_received = "0";
+        public string damage_received = "0";
+        public string enermy_detected = "0";
        
         public BattleResult(string data)
         {
             string[] temp = data.Split(',');
-            if (temp.Length >=4)
+            if (temp.Length >=12)
             {
                 user_id = temp[0];
                 tank = temp[1];
                 mode = temp[3];
+                honor = temp[4];
+                shoot = temp[5];
+                hits = temp[6];
+                penertration = temp[7];
+                damage_caused = temp[8];
+                hits_received = temp[9];
+                damage_received = temp[10];
+                enermy_detected = temp[11];
+
                 if (temp[2] == "0")
                 {
-                    victory = "true";
+                    victory = "1";
                     valid = true;
                 }
                 else if (temp[2] == "1" || temp[2] == "2")
                 {
-                    victory = "false";
+                    victory = "0";
                     valid = true;
                 }else
                 {
