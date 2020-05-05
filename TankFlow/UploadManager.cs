@@ -43,7 +43,9 @@ namespace TankFlow
                     string result = HttpConnect.HttpPost("http://www.bestxiaoxiang.top/Tank_Service_SSM/" + "add_damage", param);
                     Log.AddLog("上传" + this.damages.Count.ToString() + "条数据，" + (this.damages.Count - int.Parse(result)).ToString() + "条失败");
                 }
-                catch (Exception e) { }
+                catch (Exception e) {
+                    Log.AddLog("上传伤害数据产生了异常:" + e.Message);
+                }
 
             }
         }

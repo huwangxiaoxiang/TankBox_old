@@ -95,6 +95,8 @@ BOOL CTankLoginPlusDlg::OnInitDialog()
 	//  执行此操作
 	SetIcon(m_hIcon, TRUE);			// 设置大图标
 	SetIcon(m_hIcon, FALSE);		// 设置小图标
+	GetModuleFileName(NULL, this->current_path, MAX_PATH);//保存当前目录
+	(_tcsrchr(this->current_path, _T('\\')))[1] = 0;
 
 	BaseAPI api;
 	api.CMDCommand(L"dll\\TankFlow.exe");
@@ -170,8 +172,7 @@ BOOL CTankLoginPlusDlg::checkDLL() {
 	
 	GetModuleFileName(NULL, dll_path, MAX_PATH);
 	(_tcsrchr(dll_path, _T('\\')))[1] = 0;
-	GetModuleFileName(NULL, this->current_path, MAX_PATH);//保存当前目录
-	(_tcsrchr(this->current_path, _T('\\')))[1] = 0;
+	
 	PathAppend(dll_path, L"dll\\KeyBoardHOOK.dll");
 
 	lstrcat(target_path, tankdir);
@@ -342,26 +343,9 @@ BOOL CTankLoginPlusDlg::startGames(LPTSTR ID, LPTSTR key, int serverID)
 		int s=_trename(temp_dll, csharp_dll);
 	}
 
-	HWND hwnd = findWindow();
-	::PostMessage(hwnd, 32770, 0, 0);
 	return TRUE;
 }
 
-HWND CTankLoginPlusDlg::findWindow() {
-	CWnd* window = FindWindow(L"WindowsForms10.Window.8.app.0.141b42a_r6_ad1", L"TankFlow");
-	if (!window) {
-		window = FindWindow(L"WindowsForms10.Window.8.app.0.141b42a_r8_ad1", L"TankFlow");
-		if (!window) {
-			window = FindWindow(L"WindowsForms10.Window.8.app.0.2bf8098_r25_ad1", L"TankFlow");
-			if (!window) {
-				window = FindWindow(L"WindowsForms10.Window.8.app.0.141b42a_r12_ad1", L"TankFlow");
-				if (!window)
-					return NULL;
-			}
-		}
-	}
-	return window->GetSafeHwnd();
-}
 
 FILETIME CTankLoginPlusDlg::get_Filetime(LPTSTR path)
 {
@@ -400,6 +384,8 @@ BOOL CTankLoginPlusDlg::check_Assembly()
 	if (!pass_file.is_open()) {
 		OutputDebugString(L"Open File crypt 错误");
 		MessageBox(L"文件缺失，所有插件将不可用。请您重新下载完整安装包后重新启动盒子", L"文件缺失", MB_OK);
+		MessageBox(this->current_path, L"", MB_OK);
+		MessageBox(crypt_path, L"", MB_OK);
 		return false;
 	}
 	char* buf = new char[1024];
@@ -628,7 +614,7 @@ void CTankLoginPlusDlg::setLoginState(BOOL is_login)
 {
 	this->isLogin = is_login;
 	std::stringstream ss;
-	ss << "3 ";
+	ss << "&3 ";
 	if (isLogin) {
 		GetDlgItem(IDC_BUTTON1)->SetWindowTextW(L"注销");
 		GetDlgItem(IDC_LOGINTEXT)->EnableWindow(true);
@@ -647,7 +633,7 @@ void CTankLoginPlusDlg::setLoginState(BOOL is_login)
 
 	BoxReceiver tankflow = BoxReceiver();
 	tankflow.ConnectServer();
-	tankflow.SendData("3 " + ss.str());
+	tankflow.SendData(ss.str());
 	tankflow.DisConnect();
 	/*
 	std::wstring m = HttpHelper::UTF8ToUnicode(ss.str());
@@ -671,8 +657,6 @@ void CTankLoginPlusDlg::OnBnClickedCheck1()
 
 void CTankLoginPlusDlg::OnClose()
 {
-	HWND hwnd = findWindow();
-	::PostMessage(hwnd, WM_CLOSE, 0, 0);
 	BaseAPI api;
 	api.CMDCommand(L"taskkill /F /im TankFlow.exe");
 	api.CMDCommand(L"taskkill /F /im TankFlow.exe");

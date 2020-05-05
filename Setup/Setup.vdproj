@@ -15,13 +15,13 @@
     {
         "Entry"
         {
-        "MsmKey" = "8:_3AEB6FDEE7C048E49682AD774B163666"
+        "MsmKey" = "8:_46D3A4B718E7468DB3AEDD35279582F4"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
-        "MsmKey" = "8:_46D3A4B718E7468DB3AEDD35279582F4"
+        "MsmKey" = "8:_80D9D70CED054D45940674245D6DE64A"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -58,12 +58,6 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_3AEB6FDEE7C048E49682AD774B163666"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_UNDEFINED"
         "OwnerKey" = "8:_CE7FA194C9A8422B877C8A7C17763261"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -71,6 +65,12 @@
         {
         "MsmKey" = "8:_UNDEFINED"
         "OwnerKey" = "8:_F50F076530D93E45CD52F6B58F7B87D1"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_80D9D70CED054D45940674245D6DE64A"
         "MsmSig" = "8:_UNDEFINED"
         }
     }
@@ -98,6 +98,14 @@
             "PrerequisitesLocation" = "2:1"
             "Url" = "8:"
             "ComponentsUrl" = "8:"
+                "Items"
+                {
+                    "{EDC2488A-8267-493A-A98E-7D9C3B36CDF3}:.NETFramework,Version=v4.7.2"
+                    {
+                    "Name" = "8:Microsoft .NET Framework 4.7.2 (x86 and x64)"
+                    "ProductCode" = "8:.NETFramework,Version=v4.7.2"
+                    }
+                }
             }
         }
         "Release"
@@ -105,11 +113,11 @@
         "DisplayName" = "8:Release"
         "IsDebugOnly" = "11:FALSE"
         "IsReleaseOnly" = "11:TRUE"
-        "OutputFilename" = "8:Release\\Setup.msi"
+        "OutputFilename" = "8:Release\\坦克大战盒子安装程序.msi"
         "PackageFilesAs" = "3:2"
         "PackageFileSize" = "3:-2147483648"
         "CabType" = "3:1"
-        "Compression" = "3:2"
+        "Compression" = "3:3"
         "SignOutput" = "11:FALSE"
         "CertificateFile" = "8:"
         "PrivateKeyFile" = "8:"
@@ -117,11 +125,19 @@
         "InstallerBootstrapper" = "3:2"
             "BootstrapperCfg:{63ACBE69-63AA-4F98-B2B6-99F9E24495F2}"
             {
-            "Enabled" = "11:TRUE"
+            "Enabled" = "11:FALSE"
             "PromptEnabled" = "11:TRUE"
             "PrerequisitesLocation" = "2:1"
             "Url" = "8:"
             "ComponentsUrl" = "8:"
+                "Items"
+                {
+                    "{EDC2488A-8267-493A-A98E-7D9C3B36CDF3}:Microsoft.Net.Framework.3.5.SP1"
+                    {
+                    "Name" = "8:.NET Framework 3.5 SP1"
+                    "ProductCode" = "8:Microsoft.Net.Framework.3.5.SP1"
+                    }
+                }
             }
         }
     }
@@ -144,7 +160,7 @@
                 {
                 "Name" = "8:.NET Framework"
                 "Message" = "8:[VSDNETMSG]"
-                "FrameworkVersion" = "8:.NETFramework,Version=v4.7.2"
+                "FrameworkVersion" = "8:.NETFramework,Version=v4.0"
                 "AllowLaterVersions" = "11:FALSE"
                 "InstallUrl" = "8:http://go.microsoft.com/fwlink/?LinkId=863262"
                 }
@@ -250,11 +266,6 @@
             "AssemblyAsmDisplayName" = "8:UnityEngine, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
-                    "_F50F076530D93E45CD52F6B58F7B87D1"
-                    {
-                    "Name" = "8:UnityEngine.DLL"
-                    "Attributes" = "3:512"
-                    }
                 }
             "SourcePath" = "8:UnityEngine.DLL"
             "TargetName" = "8:"
@@ -341,26 +352,26 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:TankBox"
-        "ProductCode" = "8:{6549D071-162E-4D39-B8E6-EBE3BA289AB0}"
-        "PackageCode" = "8:{FDD2AF34-687F-4503-94FA-450A0EED444A}"
+        "ProductCode" = "8:{CAD4DD2F-B7A5-468D-BBC3-BD697256C33E}"
+        "PackageCode" = "8:{92B8768C-DD07-4496-9297-7F5AFE4B3389}"
         "UpgradeCode" = "8:{C5B4FE8B-BEBC-474D-85C1-0813500B37A5}"
         "AspNetVersion" = "8:2.0.50727.0"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:FALSE"
-        "ProductVersion" = "8:1.2.1"
+        "ProductVersion" = "8:1.3.1"
         "Manufacturer" = "8:XiaoXiang"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:"
         "Title" = "8:Setup"
         "Subject" = "8:"
-        "ARPCONTACT" = "8:Default Company Name"
+        "ARPCONTACT" = "8:XiaoXiang"
         "Keywords" = "8:"
         "ARPCOMMENTS" = "8:坦克大战盒子，优化游戏体验，助力MVP！"
         "ARPURLINFOABOUT" = "8:"
-        "ARPPRODUCTICON" = "8:"
-        "ARPIconIndex" = "3:0"
+        "ARPPRODUCTICON" = "8:_AFFA4D07D6364D05B8FE6A8A0A8F8D7B"
+        "ARPIconIndex" = "3:16931"
         "SearchPath" = "8:"
         "UseSystemSearchPath" = "11:TRUE"
         "TargetPlatform" = "3:0"
@@ -875,7 +886,7 @@
         }
         "ProjectOutput"
         {
-            "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_3AEB6FDEE7C048E49682AD774B163666"
+            "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_80D9D70CED054D45940674245D6DE64A"
             {
             "SourcePath" = "8:..\\TankFlow\\obj\\Release\\TankFlow.exe"
             "TargetName" = "8:"

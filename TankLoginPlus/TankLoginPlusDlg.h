@@ -63,7 +63,7 @@ private:
 	LPTSTR getTankDir();
 	BOOL Is_exist(LPTSTR path);
 	BOOL startGames(LPTSTR ID, LPTSTR key, int serverID);
-	HWND findWindow();
+
 	FILETIME get_Filetime(LPTSTR path);
 
 	BOOL check_Assembly();

@@ -22,12 +22,11 @@ namespace TankFlow
         const int STOPRECOGNIZE = 36285;
 
 
-        const string GameClass = "UnityWndClass";
-        const string GameName = "Tank Battle";
-        bool is_lock = true;
-        bool show_damage_panel = true;
-        List<Damage> damage_list = new List<Damage>();
-        Damage[] temp_damage = new Damage[6];
+        private const string GameClass = "UnityWndClass";
+        private const string GameName = "Tank Battle";
+        private bool show_damage_panel = true;
+        private List<Damage> damage_list = new List<Damage>();
+        private Damage[] temp_damage = new Damage[6];
 
         private int user_id = -1;
 
@@ -65,10 +64,6 @@ namespace TankFlow
             }
         }
 
-        private void setUser(int user_id)
-        {
-            this.user_id = user_id;
-        }
 
         //初始化窗口数据
         private void initWindow()
@@ -176,6 +171,7 @@ namespace TankFlow
         /**/
         protected override void DefWndProc(ref System.Windows.Forms.Message m)
         {
+            /*
             is_lock = true;
             if (m.Msg == 32770)
                 is_lock = false;
@@ -201,7 +197,8 @@ namespace TankFlow
                     base.DefWndProc(ref m);
                     break;
             }
-
+            */
+            base.DefWndProc(ref m);
         }
 
         public void HandleCopyData(string host, ReceivedData data)
@@ -406,7 +403,7 @@ namespace TankFlow
 
         private void RecognizeTimer_Tick(object sender, EventArgs e)
         {
-            int alp = 0;
+            int alp;
             if (this.rec_alpha > 3.1415f)
             {
                 this.rec_alpha -= 3.1415f;
