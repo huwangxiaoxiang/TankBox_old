@@ -14,6 +14,7 @@ namespace TankFlow
         public bool valid = true;
         public bool friend = false;
         public int grade = 8;
+        public int hitpart = 0;
 
         public string GetDamageType()
         {
@@ -49,6 +50,19 @@ namespace TankFlow
             }
         }
 
+        public string Output()
+        {
+            string result = "";
+            result += this.source;
+            result += " -> ";
+            result += this.victim;
+            result += " 击中部位：";
+            result += this.hitpart.ToString();
+            result += " 击中类型:";
+            result += this.GetDamageType();
+            return result;
+        }
+
         public Damage(string s)
         {
             if (s == "")
@@ -74,10 +88,12 @@ namespace TankFlow
                 if (type == 17)
                     valid = false;
                 grade = int.Parse(mm[8]);
+                hitpart = int.Parse(mm[9]);
             }
             catch (Exception)
             {
                 valid = false;
+                Log.Record("格式化Damage失败:" + s);
             }
         }
 

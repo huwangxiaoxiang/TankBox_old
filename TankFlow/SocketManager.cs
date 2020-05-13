@@ -114,7 +114,11 @@ namespace TankFlow
                 }
                 return "";
             }
-            catch { return ""; }
+            catch(Exception e)
+            {
+                Log.Record("获取本机IP失败:" + e.Message);
+                return "";
+            }
         }
 
         public SocketServer(int port, Receiver receiver, bool localIP)
@@ -161,7 +165,7 @@ namespace TankFlow
             }
             catch (Exception ex)
             {
-                Log.AddLog("服务端开启失败:" + ex.Message);
+                Log.Record("服务端开启失败:" + ex.Message);
             }
         }
 
@@ -179,17 +183,17 @@ namespace TankFlow
                     Thread thread = new Thread(ReceiveMessage);
                     thread.Start(clientSocket);
                 }
-                catch
+                catch(Exception e)
                 {
-                    Log.AddLog("服务器监听连接线程已捕获到异常，服务端监听已停止");
+                    Log.Record("服务器监听连接线程已捕获到异常，服务端监听已停止"+e.Message);
                 }
             }
             try
             {
                 _socket.Close();
             }
-            catch { }
-
+            catch {
+            }
             Log.AddLog("服务端监听已关闭");
         }
 
@@ -217,12 +221,12 @@ namespace TankFlow
                     } while (true);
 
                     if (length_sum == 0) break;
-                    Log.AddLog("服务端收到消息:" + message);
+                    //Log.AddLog("服务端收到消息:" + message);
                     mMessageReceiver.OnReceiveMessage(clientIp, message);
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine(ex.Message);
+                    Log.Record("Socket连接已关闭：" + ex.Message);
                     break;
                 }
             }
@@ -239,7 +243,7 @@ namespace TankFlow
         private int _port = 0;
         private Socket _socket = null;
         private byte[] buffer = new byte[1024 * 1024 * 2];
-        private bool close = false;
+        private bool close = true;
         private uint messageType = 0;//0代表string型的数据，1代表byte型的数据
         private string remoteIp = string.Empty;
 
@@ -259,6 +263,11 @@ namespace TankFlow
         public int GetPort()
         {
             return this._port;
+        }
+
+        public bool IsConnect()
+        {
+            return !this.close;
         }
 
         protected virtual void OnReceiveMessage(string message)
@@ -303,6 +312,7 @@ namespace TankFlow
                 //4.0 建立连接
                 _socket.Connect(endPoint);
                 this.remoteIp = _socket.RemoteEndPoint.ToString();
+                this.close = false;
                 this.OnConnectEstablish();
                 Thread s = new Thread(OnReceive);
                 s.Start();
@@ -311,7 +321,8 @@ namespace TankFlow
             catch (Exception ex)
             {
                 _socket.Close();
-                Console.WriteLine(ex.Message);
+                Log.Record("连接服务器失败:" + ex.Message);
+                this.close = true;
                 return false;
             }
             return true;
@@ -338,7 +349,7 @@ namespace TankFlow
             }
             catch (Exception e)
             {
-                Log.AddLog("byte消息发送失败:" + e.Message);
+                Log.Record("byte消息发送失败:" + e.Message);
             }
         }
 
@@ -377,7 +388,7 @@ namespace TankFlow
                 catch (Exception e)
                 {
                     this.close = true;
-                    Console.WriteLine(e.Message);
+                   Log.Record("Socket连接已关闭:"+e.Message);
                     break;
                 }
             }
@@ -385,6 +396,7 @@ namespace TankFlow
                 this._socket.Close();
             this.OnConnectBroken();
             this._socket = null;
+            this.close = true;
             Log.AddLog("[客户端]与服务端的连接已断开");
         }
 

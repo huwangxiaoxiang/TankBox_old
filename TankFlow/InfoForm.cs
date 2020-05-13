@@ -36,7 +36,10 @@ namespace TankFlow
         private string rec_text = "正在识别...";
         private string tank_client;
 
-
+        private int shoot_sum = 0;
+        private int hit_sum = 0;
+        private int penertrate_sum = 0;
+        private int maxdamage_sum = 0;
 
 
         public TankFlow()
@@ -59,6 +62,7 @@ namespace TankFlow
                 {
                     this.recognizeTimer.Stop();
                     this.clearRec();
+                    this.DrawScore();
                 });
                 this.BeginInvoke(mi);
             }
@@ -77,8 +81,12 @@ namespace TankFlow
             for (int i = 0; i < 6; i++)
                 temp_damage[i] = new Damage("");
             drawLabels();
-            this.spot_state.Visible = false;
-
+            DrawSpot("");
+            this.shoot_sum = 0;
+            this.hit_sum = 0;
+            this.penertrate_sum = 0;
+            this.maxdamage_sum = 0;
+            this.DrawScore();
         }
 
         //添加字符串至窗口
@@ -99,8 +107,14 @@ namespace TankFlow
             Point init = new Point(1, 36);
             int dy = 30;
             int width = 350, height = 25;
+            Color green_color, red_color, border_color;
+            border_color = Color.FromArgb(10, 0, 0);
+            green_color = Color.FromArgb(80, 215, 120);
+            red_color = Color.FromArgb(255,255,255);
+
             Graphics g = this.CreateGraphics();
             Brush back_brush = new SolidBrush(this.BackColor);
+
             for (int i = 0; i < 6; i++)
             {
                 Damage temp = temp_damage[i];
@@ -108,21 +122,61 @@ namespace TankFlow
                     continue;
                 Rectangle rect = new Rectangle(init.X + 1, init.Y + i * dy, width, height);
                 g.FillRectangle(back_brush, rect);
-                Color font_color, border_color;
-                border_color = Color.FromArgb(10, 0, 0);
+                
+
+                Color left, right;
                 if (temp_damage[i].friend)
-                    font_color = Color.FromArgb(80, 215, 120);
+                {
+                    left = green_color;
+                    right = red_color;
+                }
                 else
-                    font_color = Color.FromArgb(239, 32, 0);
-                GDIDraw.Paint_Text(temp.fillspace(10, temp.source), rect, font_color, border_color, g, 14f);
+                {
+                    left = red_color;
+                    right = green_color;
+                }
+                GDIDraw.Paint_Text(temp.fillspace(10, temp.source), rect, left, border_color, g, 14f);
                 rect.Offset(115, 0);
-                GDIDraw.Paint_Text("->", rect, font_color, border_color, g, 14f);
+                GDIDraw.Paint_Text("->", rect, Color.FromArgb(255,255,255), border_color, g, 14f);
                 rect.Offset(30, 0);
-                GDIDraw.Paint_Text(temp.fillspace(10, temp.victim), rect, font_color, border_color, g, 14f);
+                GDIDraw.Paint_Text(temp.fillspace(10, temp.victim), rect, right, border_color, g, 14f);
                 rect.Offset(115, 0);
-                GDIDraw.Paint_Text(temp.GetDamageType(), rect, font_color, border_color, g, 14f);
+                GDIDraw.Paint_Text(temp.GetDamageType(), rect, left, border_color, g, 14f);
 
             }
+            g.Dispose();
+            back_brush.Dispose();
+        }
+
+        private void DrawScore()
+        {
+            string text = "※ " + this.hit_sum.ToString();
+            text = text + "      ➹ " + this.penertrate_sum.ToString();
+            text = text + "      ★ " + this.maxdamage_sum.ToString();
+            Point init = new Point(130, 7);
+            Graphics g = this.CreateGraphics();
+            Brush back_brush = new SolidBrush(this.BackColor);
+            Rectangle rect = new Rectangle(init.X,init.Y,200,30);
+            g.FillRectangle(back_brush, rect);
+            Color font_color, border_color;
+            border_color = Color.FromArgb(10, 0, 0);
+            font_color = Color.FromArgb(255,255,255);
+            GDIDraw.Paint_Text(text, rect, font_color, border_color, g, 13f);
+            g.Dispose();
+            back_brush.Dispose();
+        }
+
+        private void DrawSpot(string text)
+        {
+            Point init = new Point(1, 4);
+            Graphics g = this.CreateGraphics();
+            Brush back_brush = new SolidBrush(this.BackColor);
+            Rectangle rect = new Rectangle(init.X, init.Y, 100, 30);
+            g.FillRectangle(back_brush, rect);
+            Color font_color, border_color;
+            border_color = Color.FromArgb(10, 0, 0);
+            font_color = Color.FromArgb(239, 32, 0);
+            GDIDraw.Paint_Text(text, rect, font_color, border_color, g, 20f);
             g.Dispose();
             back_brush.Dispose();
         }
@@ -149,7 +203,7 @@ namespace TankFlow
             Graphics g = this.CreateGraphics();
             Brush back_brush = new SolidBrush(this.BackColor);
             Color border_color = Color.FromArgb(10, 0, 0);
-            Rectangle rect2 = new Rectangle(120, 10, 400, 19);
+            Rectangle rect2 = new Rectangle(120, 10, 220, 19);
             g.FillRectangle(back_brush, rect2);
             Color font_color2 = Color.FromArgb(80, 215, 120);
             GDIDraw.Paint_Text(this.rec_text, rect2, font_color2, border_color, g, 14f);
@@ -161,7 +215,7 @@ namespace TankFlow
         {
             Graphics g = this.CreateGraphics();
             Brush back_brush = new SolidBrush(this.BackColor);
-            Rectangle rect2 = new Rectangle(0, 0, 500, 40);
+            Rectangle rect2 = new Rectangle(95, 0, 250, 40);
             g.FillRectangle(back_brush, rect2);
             g.Dispose();
             back_brush.Dispose();
@@ -210,6 +264,7 @@ namespace TankFlow
                 {
                     case 1://坦克造成伤害
                         Damage dama = new Damage(data.message);
+                        //Log.AddLog(dama.Output());
                         if (dama.valid)
                         {
                             damage_list.Add(dama);
@@ -241,10 +296,23 @@ namespace TankFlow
                             Log.AddLog("设置ID成功 " + this.user_id.ToString());
                         }
                         break;
-                    case 4:
+                    case 4://事件信息
                         int flag = int.Parse(data.message);
                         this.OnHandleEvent(flag);
                         break;
+                    case 5://玩家击中目标
+                        Log.AddLog("玩家击中了目标:" + data.message);
+                        this.hit_sum++;
+                        if (data.message != "5")
+                        {
+                            this.penertrate_sum++;
+                            if (data.message == "9")
+                                this.maxdamage_sum++;
+                        }
+                       
+                        this.DrawScore();
+                        break;
+                    
                 }
             });
             this.BeginInvoke(mi);
@@ -311,12 +379,14 @@ namespace TankFlow
                     }).Start();
                     break;
                 case SPOTED:
-                    this.spot_state.Visible = true;
+                    //this.spot_state.Visible = true;
+                    DrawSpot("已被点亮");
                     this.Show();
                     this.postimer.Start();
                     break;
                 case UNSPOTED:
-                    this.spot_state.Visible = false;
+                    //this.spot_state.Visible = false;
+                    DrawSpot("");
                     break;
                 case DISABLE_PANEL:
                     this.show_damage_panel = false;
@@ -341,6 +411,12 @@ namespace TankFlow
                     }
                     this.recognizeTimer.Stop();
                     this.clearRec();
+                    this.DrawScore();
+                    break;
+                case 36286://玩家射击了一次
+                    //Log.AddLog("玩家射击了一次");
+                    this.shoot_sum++;
+                    this.DrawScore();
                     break;
                 default:
                     Log.AddLog("未知消息类型：" + flag);

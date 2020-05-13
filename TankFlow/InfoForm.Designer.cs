@@ -39,7 +39,6 @@ namespace TankFlow
             this.label6 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
             this.postimer = new System.Windows.Forms.Timer(this.components);
-            this.spot_state = new System.Windows.Forms.Label();
             this.recognizeTimer = new System.Windows.Forms.Timer(this.components);
             this.SuspendLayout();
             // 
@@ -113,18 +112,6 @@ namespace TankFlow
             // 
             this.postimer.Tick += new System.EventHandler(this.Postimer_Tick);
             // 
-            // spot_state
-            // 
-            this.spot_state.AutoSize = true;
-            this.spot_state.Font = new System.Drawing.Font("微软雅黑", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.spot_state.ForeColor = System.Drawing.Color.Crimson;
-            this.spot_state.Location = new System.Drawing.Point(3, 4);
-            this.spot_state.Name = "spot_state";
-            this.spot_state.Size = new System.Drawing.Size(88, 26);
-            this.spot_state.TabIndex = 1;
-            this.spot_state.Text = "已被点亮";
-            this.spot_state.Visible = false;
-            // 
             // recognizeTimer
             // 
             this.recognizeTimer.Tick += new System.EventHandler(this.RecognizeTimer_Tick);
@@ -134,7 +121,6 @@ namespace TankFlow
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(335, 220);
-            this.Controls.Add(this.spot_state);
             this.Controls.Add(this.label6);
             this.Controls.Add(this.label5);
             this.Controls.Add(this.label4);
@@ -160,7 +146,6 @@ namespace TankFlow
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.Timer postimer;
-        private System.Windows.Forms.Label spot_state;
         private System.Windows.Forms.Timer recognizeTimer;
     }
 }

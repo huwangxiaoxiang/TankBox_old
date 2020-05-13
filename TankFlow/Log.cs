@@ -24,5 +24,19 @@ namespace TankFlow
             Console.WriteLine(s);
 #endif
         }
+
+        public static void Record(string s)
+        {
+            s = DateTime.Now.ToString() + "   " + s;
+            /**/
+            sema.WaitOne();
+            FileStream fs = new FileStream(path, FileMode.Append);
+            StreamWriter sw = new StreamWriter(fs);
+            sw.WriteLine(s);
+            sw.Close();
+            fs.Close();
+            sema.Release();
+            Console.WriteLine(s);
+        }
     }
 }

@@ -134,4 +134,8 @@ private:
 	CComboBox missile_kind;
 public:
 	afx_msg void OnCbnSelchangeMissile();
+private:
+	BOOL viewDistance;
+public:
+	afx_msg void OnBnClickedCheck12();
 };

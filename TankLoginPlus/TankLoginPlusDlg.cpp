@@ -38,6 +38,7 @@ CTankLoginPlusDlg::CTankLoginPlusDlg(CWnd* pParent /*=nullptr*/)
 	, audio_recognize(FALSE)
 	, red_point(TRUE)
 	, safe_distance(TRUE)
+	, viewDistance(FALSE)
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDI_ICON5);
 }
@@ -60,6 +61,7 @@ void CTankLoginPlusDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Check(pDX, IDC_CHECK10, red_point);
 	DDX_Check(pDX, IDC_CHECK11, safe_distance);
 	DDX_Control(pDX, IDC_COMBO2, missile_kind);
+	DDX_Check(pDX, IDC_CHECK12, viewDistance);
 }
 
 BEGIN_MESSAGE_MAP(CTankLoginPlusDlg, CDialogEx)
@@ -82,6 +84,7 @@ BEGIN_MESSAGE_MAP(CTankLoginPlusDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_CHECK10, &CTankLoginPlusDlg::OnBnClickedCheck10)
 	ON_BN_CLICKED(IDC_CHECK11, &CTankLoginPlusDlg::OnBnClickedCheck11)
 	ON_CBN_SELCHANGE(IDC_COMBO2, &CTankLoginPlusDlg::OnCbnSelchangeMissile)
+	ON_BN_CLICKED(IDC_CHECK12, &CTankLoginPlusDlg::OnBnClickedCheck12)
 END_MESSAGE_MAP()
 
 
@@ -524,6 +527,13 @@ void CTankLoginPlusDlg::InitPlugin()
 		this->missile_kind.SetCurSel(6);
 		TankPluginManager::setPlugin("missile_kind", "7");
 	}
+	if (TankPluginManager::hasPlugin("viewDistance")) {
+		this->viewDistance = this->getPluginState("viewDistance");
+	}
+	else {
+		this->viewDistance = true;
+		this->setPluginState("viewDistance", true);
+	}
 
 	UpdateData(false);
 }
@@ -544,6 +554,7 @@ void CTankLoginPlusDlg::savePlugin()
 	this->setPluginState("audio_recognize", this->audio_recognize);
 	this->setPluginState("red_point", this->red_point);
 	this->setPluginState("safe_distance", this->safe_distance);
+	this->setPluginState("viewDistance", this->viewDistance);
 
 	TankPluginManager::setPlugin("missile_kind", std::to_string(this->missile_kind.GetCurSel()+1));      
 
@@ -768,6 +779,13 @@ void CTankLoginPlusDlg::OnBnClickedCheck11()
 
 
 void CTankLoginPlusDlg::OnCbnSelchangeMissile()
+{
+	this->savePlugin();
+	MessageBox(L"设置已保存，最迟下一场战斗生效！", L"设置成功", MB_OK);
+}
+
+
+void CTankLoginPlusDlg::OnBnClickedCheck12()
 {
 	this->savePlugin();
 	MessageBox(L"设置已保存，最迟下一场战斗生效！", L"设置成功", MB_OK);

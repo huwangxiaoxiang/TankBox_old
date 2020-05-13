@@ -25,7 +25,7 @@ namespace TankFlow
                 json = json + "'damage':" + damage.damage.ToString() + ",";
                 json = json + "'damagetype':" + damage.type.ToString() + ",";
                 json = json + "'battletype':" + damage.battleType.ToString() + ",";
-                json = json + "'battleid':" + damage.battleId.ToString();
+                json = json + "'battleid':" + damage.hitpart.ToString();
                 json = json + "}";
                 result = result + json + ",";
             }
@@ -44,7 +44,7 @@ namespace TankFlow
                     Log.AddLog("上传" + this.damages.Count.ToString() + "条数据，" + (this.damages.Count - int.Parse(result)).ToString() + "条失败");
                 }
                 catch (Exception e) {
-                    Log.AddLog("上传伤害数据产生了异常:" + e.Message);
+                    Log.Record("上传伤害数据产生了异常:" + e.Message);
                 }
 
             }

@@ -7,7 +7,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TankFlow", "TankFlow\TankFl
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TankLoginPlus", "TankLoginPlus\TankLoginPlus.vcxproj", "{7ECE4679-F91C-4FB8-8CB6-30B9581DBE80}"
 EndProject
-Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "Setup", "Setup\Setup.vdproj", "{221E5BF8-99D1-425F-AED4-CB3E1AA4802A}"
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "Setup", "Setup\Setup.vdproj", "{F1B328F6-7716-4C24-B30A-9C7918A546B6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -42,12 +42,12 @@ Global
 		{7ECE4679-F91C-4FB8-8CB6-30B9581DBE80}.Release|x64.Build.0 = Release|x64
 		{7ECE4679-F91C-4FB8-8CB6-30B9581DBE80}.Release|x86.ActiveCfg = Release|Win32
 		{7ECE4679-F91C-4FB8-8CB6-30B9581DBE80}.Release|x86.Build.0 = Release|Win32
-		{221E5BF8-99D1-425F-AED4-CB3E1AA4802A}.Debug|Any CPU.ActiveCfg = Debug
-		{221E5BF8-99D1-425F-AED4-CB3E1AA4802A}.Debug|x64.ActiveCfg = Debug
-		{221E5BF8-99D1-425F-AED4-CB3E1AA4802A}.Debug|x86.ActiveCfg = Debug
-		{221E5BF8-99D1-425F-AED4-CB3E1AA4802A}.Release|Any CPU.ActiveCfg = Release
-		{221E5BF8-99D1-425F-AED4-CB3E1AA4802A}.Release|x64.ActiveCfg = Release
-		{221E5BF8-99D1-425F-AED4-CB3E1AA4802A}.Release|x86.ActiveCfg = Release
+		{F1B328F6-7716-4C24-B30A-9C7918A546B6}.Debug|Any CPU.ActiveCfg = Debug
+		{F1B328F6-7716-4C24-B30A-9C7918A546B6}.Debug|x64.ActiveCfg = Debug
+		{F1B328F6-7716-4C24-B30A-9C7918A546B6}.Debug|x86.ActiveCfg = Debug
+		{F1B328F6-7716-4C24-B30A-9C7918A546B6}.Release|Any CPU.ActiveCfg = Release
+		{F1B328F6-7716-4C24-B30A-9C7918A546B6}.Release|x64.ActiveCfg = Release
+		{F1B328F6-7716-4C24-B30A-9C7918A546B6}.Release|x86.ActiveCfg = Release
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
