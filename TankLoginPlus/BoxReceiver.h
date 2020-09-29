@@ -5,6 +5,5 @@ class BoxReceiver :
 {
 public:
 	BoxReceiver();
-
 };
 

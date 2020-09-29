@@ -15,7 +15,37 @@
     {
         "Entry"
         {
+        "MsmKey" = "8:_0D3451A355597C8963AEBB0011C8ED31"
+        "OwnerKey" = "8:_4C18385C6C654B32A60D220CF03731BC"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_18B70FB067D84982916122BD05002DA0"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_4C18385C6C654B32A60D220CF03731BC"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_5AF8C7FD62404EE38644268216DF8037"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_6F03747D7BCF291640C1270B6DE5C6DC"
+        "OwnerKey" = "8:_18B70FB067D84982916122BD05002DA0"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_7674A497B09B498D86240726A54324FA"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -27,25 +57,7 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_C8380A0C3092A7D519FD7E27FECD56D8"
-        "OwnerKey" = "8:_F7F5F108A7CF419C9A145B609C81B4E0"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_CFF13C1CA11344989168747A6110EA67"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_F4EB786E87B34020B5B78BC4313D3615"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_F7F5F108A7CF419C9A145B609C81B4E0"
+        "MsmKey" = "8:_99C44D0FFFAF4812B2384854DA63327E"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -58,13 +70,19 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_F7F5F108A7CF419C9A145B609C81B4E0"
+        "OwnerKey" = "8:_18B70FB067D84982916122BD05002DA0"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_C8380A0C3092A7D519FD7E27FECD56D8"
+        "OwnerKey" = "8:_6F03747D7BCF291640C1270B6DE5C6DC"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_0D3451A355597C8963AEBB0011C8ED31"
         "MsmSig" = "8:_UNDEFINED"
         }
     }
@@ -85,13 +103,29 @@
         "PrivateKeyFile" = "8:"
         "TimeStampServer" = "8:"
         "InstallerBootstrapper" = "3:2"
+            "BootstrapperCfg:{63ACBE69-63AA-4F98-B2B6-99F9E24495F2}"
+            {
+            "Enabled" = "11:TRUE"
+            "PromptEnabled" = "11:TRUE"
+            "PrerequisitesLocation" = "2:1"
+            "Url" = "8:"
+            "ComponentsUrl" = "8:"
+                "Items"
+                {
+                    "{EDC2488A-8267-493A-A98E-7D9C3B36CDF3}:.NETFramework,Version=v4.7.2"
+                    {
+                    "Name" = "8:Microsoft .NET Framework 4.7.2 (x86 and x64)"
+                    "ProductCode" = "8:.NETFramework,Version=v4.7.2"
+                    }
+                }
+            }
         }
         "Release"
         {
         "DisplayName" = "8:Release"
         "IsDebugOnly" = "11:FALSE"
         "IsReleaseOnly" = "11:TRUE"
-        "OutputFilename" = "8:Release\\TankBox_V1.0.9.5.msi"
+        "OutputFilename" = "8:Release\\TankBox_V1.0.9.11.msi"
         "PackageFilesAs" = "3:2"
         "PackageFileSize" = "3:-2147483648"
         "CabType" = "3:1"
@@ -141,10 +175,52 @@
         }
         "File"
         {
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_863EB070C40C492FA0DCE1816B0B6B5B"
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_0D3451A355597C8963AEBB0011C8ED31"
             {
-            "SourcePath" = "8:G:\\pythonProject\\RecordRecognize\\dist\\Audio.exe"
-            "TargetName" = "8:Audio.exe"
+            "AssemblyRegister" = "3:1"
+            "AssemblyIsInGAC" = "11:FALSE"
+            "AssemblyAsmDisplayName" = "8:Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL"
+                "ScatterAssemblies"
+                {
+                    "_0D3451A355597C8963AEBB0011C8ED31"
+                    {
+                    "Name" = "8:Newtonsoft.Json.dll"
+                    "Attributes" = "3:512"
+                    }
+                }
+            "SourcePath" = "8:Newtonsoft.Json.dll"
+            "TargetName" = "8:"
+            "Tag" = "8:"
+            "Folder" = "8:_CC47FAE1E55E4487A13E338228CD80C2"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:TRUE"
+            "IsolateTo" = "8:"
+            }
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_18B70FB067D84982916122BD05002DA0"
+            {
+            "AssemblyRegister" = "3:1"
+            "AssemblyIsInGAC" = "11:FALSE"
+            "AssemblyAsmDisplayName" = "8:Assembly-CSharp, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL"
+                "ScatterAssemblies"
+                {
+                    "_18B70FB067D84982916122BD05002DA0"
+                    {
+                    "Name" = "8:Assembly.dll"
+                    "Attributes" = "3:512"
+                    }
+                }
+            "SourcePath" = "8:C:\\Users\\xiaoxiang\\Documents\\tkdz\\Tank_Data\\Managed\\Assembly.dll"
+            "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_CC47FAE1E55E4487A13E338228CD80C2"
             "Condition" = "8:"
@@ -161,14 +237,34 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_C8380A0C3092A7D519FD7E27FECD56D8"
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_5AF8C7FD62404EE38644268216DF8037"
+            {
+            "SourcePath" = "8:..\\Release\\TankLoginPlus.exe"
+            "TargetName" = "8:TankLoginPlus.exe"
+            "Tag" = "8:"
+            "Folder" = "8:_6018419D0B6A46959CC53752FF2CC327"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_6F03747D7BCF291640C1270B6DE5C6DC"
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
             "AssemblyAsmDisplayName" = "8:UnityEngine, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
-                    "_C8380A0C3092A7D519FD7E27FECD56D8"
+                    "_6F03747D7BCF291640C1270B6DE5C6DC"
                     {
                     "Name" = "8:UnityEngine.DLL"
                     "Attributes" = "3:512"
@@ -192,32 +288,12 @@
             "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_CFF13C1CA11344989168747A6110EA67"
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_7674A497B09B498D86240726A54324FA"
             {
-            "SourcePath" = "8:C:\\Users\\12703\\Documents\\tkdz\\TankBox_V1.0.8.3\\crypt"
-            "TargetName" = "8:crypt"
+            "SourcePath" = "8:..\\TankFlow\\pao.png"
+            "TargetName" = "8:pao.png"
             "Tag" = "8:"
-            "Folder" = "8:_6018419D0B6A46959CC53752FF2CC327"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:TRUE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_F4EB786E87B34020B5B78BC4313D3615"
-            {
-            "SourcePath" = "8:..\\Release\\TankLoginPlus.exe"
-            "TargetName" = "8:TankLoginPlus.exe"
-            "Tag" = "8:"
-            "Folder" = "8:_6018419D0B6A46959CC53752FF2CC327"
+            "Folder" = "8:_DD68A68B1121492C84C2DEFE89553CAE"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -232,23 +308,32 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_F7F5F108A7CF419C9A145B609C81B4E0"
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_863EB070C40C492FA0DCE1816B0B6B5B"
             {
-            "AssemblyRegister" = "3:1"
-            "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:Assembly-CSharp, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL"
-                "ScatterAssemblies"
-                {
-                    "_F7F5F108A7CF419C9A145B609C81B4E0"
-                    {
-                    "Name" = "8:Assembly.dll"
-                    "Attributes" = "3:512"
-                    }
-                }
-            "SourcePath" = "8:C:\\Users\\12703\\Documents\\tkdz\\Tank_Data\\Managed\\Assembly.dll"
-            "TargetName" = "8:"
+            "SourcePath" = "8:G:\\pythonProject\\RecordRecognize\\dist\\Audio.exe"
+            "TargetName" = "8:Audio.exe"
             "Tag" = "8:"
             "Folder" = "8:_CC47FAE1E55E4487A13E338228CD80C2"
+            "Condition" = "8:"
+            "Transitive" = "11:TRUE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_99C44D0FFFAF4812B2384854DA63327E"
+            {
+            "SourcePath" = "8:..\\crypt"
+            "TargetName" = "8:crypt"
+            "Tag" = "8:"
+            "Folder" = "8:_6018419D0B6A46959CC53752FF2CC327"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -301,6 +386,17 @@
                         {
                         }
                     }
+                    "{9EF0B969-E518-4E46-987F-47570745A589}:_DD68A68B1121492C84C2DEFE89553CAE"
+                    {
+                    "Name" = "8:Resource"
+                    "AlwaysCreate" = "11:FALSE"
+                    "Condition" = "8:"
+                    "Transitive" = "11:FALSE"
+                    "Property" = "8:_66784DEC910F4BB382609E1E7E33144A"
+                        "Folders"
+                        {
+                        }
+                    }
                 }
             }
             "{1525181F-901A-416C-8A58-119130FE478E}:_B1C1D4019D7D486E8726CC5B16816729"
@@ -330,15 +426,15 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:TankBox"
-        "ProductCode" = "8:{F279C0E1-9D0C-4780-A06E-028EEE6F671C}"
-        "PackageCode" = "8:{6D233BB6-F11F-466E-AE50-4A970AD6F209}"
+        "ProductCode" = "8:{86AB9449-3755-4093-9A8A-26EEC263501B}"
+        "PackageCode" = "8:{6A55B570-0C36-4D9F-B58E-53755EFE6A7D}"
         "UpgradeCode" = "8:{95682B6C-A7CD-4AD5-A5A0-6C61FD72C374}"
         "AspNetVersion" = "8:2.0.50727.0"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
-        "DetectNewerInstalledVersion" = "11:TRUE"
+        "DetectNewerInstalledVersion" = "11:FALSE"
         "InstallAllUsers" = "11:TRUE"
-        "ProductVersion" = "8:1.9.5"
+        "ProductVersion" = "8:1.9.23"
         "Manufacturer" = "8:XiaoXiang"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:"
@@ -451,18 +547,18 @@
         }
         "Shortcut"
         {
-            "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_6105D85318C74360B178C1C5A9FD6E1D"
+            "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_DC1107A2AF3A457C8C6364129F45447F"
             {
             "Name" = "8:坦克大战盒子"
             "Arguments" = "8:"
-            "Description" = "8:"
+            "Description" = "8:TankBox黑科技插件"
             "ShowCmd" = "3:1"
             "IconIndex" = "3:138"
             "Transitive" = "11:FALSE"
-            "Target" = "8:_F4EB786E87B34020B5B78BC4313D3615"
+            "Target" = "8:_5AF8C7FD62404EE38644268216DF8037"
             "Folder" = "8:_B1C1D4019D7D486E8726CC5B16816729"
             "WorkingFolder" = "8:_6018419D0B6A46959CC53752FF2CC327"
-            "Icon" = "8:_F4EB786E87B34020B5B78BC4313D3615"
+            "Icon" = "8:_5AF8C7FD62404EE38644268216DF8037"
             "Feature" = "8:"
             }
         }
@@ -866,7 +962,7 @@
         {
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_4C18385C6C654B32A60D220CF03731BC"
             {
-            "SourcePath" = "8:..\\TankFlow\\obj\\Release\\TankFlow.exe"
+            "SourcePath" = "8:"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_CC47FAE1E55E4487A13E338228CD80C2"

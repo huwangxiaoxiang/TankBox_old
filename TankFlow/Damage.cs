@@ -35,6 +35,33 @@ namespace TankFlow
             }
         }
 
+        public string GetHitPartName()
+        {
+            switch (hitpart)
+            {
+                case 0:
+                    return "车身正面";
+                case 1:
+                    return "车身侧面";
+                case 2:
+                    return "车身后面";
+                case 3:
+                    return "炮塔正面";
+                case 4:
+                    return "炮塔侧面";
+                case 5:
+                    return "炮塔后面";
+                case 6:
+                    return "炮塔正面";
+                case 7:
+                    return "炮塔侧面";
+                case 8:
+                    return "炮塔后面";
+                default:
+                    return "";
+            }
+        }
+
         string GetBattleType()
         {
             switch (battleType)

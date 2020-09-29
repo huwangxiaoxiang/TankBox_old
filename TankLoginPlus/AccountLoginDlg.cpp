@@ -101,16 +101,18 @@ void AccountLoginDlg::OnBnClickedLogin()
 		std::vector<std::string> s = http.split_str(result, ",");
 		std::string id = *(s.begin() + 1);
 		std::string name = *(s.begin() + 2);
-		this->mainDlg->setAccount(id, name);
+		std::string email = *(s.begin() + 3);
+		
+		this->mainDlg->setAccount(id, name,email);
 		this->mainDlg->setLoginState(true);
 		this->mainDlg->UpdateData(false);
 	
 		UpdateData(true);
 		if (this->mRememberAccount) {
-			this->mainDlg->mSaveAccount(id,name);
+			this->mainDlg->mSaveAccount(id,name,email);
 		}
 		else {
-			this->mainDlg->mSaveAccount("", "");
+			this->mainDlg->mSaveAccount("", "","");
 		}
 
 		CDialogEx::OnOK();

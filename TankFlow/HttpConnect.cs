@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using Newtonsoft.Json.Linq;
+using System;
+using System.Collections.Generic;
 using System.IO;
 
 using System.Net;
@@ -9,11 +11,13 @@ namespace TankFlow
     class HttpConnect
     {
         public static readonly string mBaseURL = "http://www.bestxiaoxiang.top/Tank_Service_SSM/";
+        private static int mMaxRetryTimes = 5;
 
         public static bool UploadBattleResult(BattleResult result)
         {
             string request = "add_battle_result2";
-            Dictionary<string, object> dic = new Dictionary<string, object>();
+            //Dictionary<string, object> dic = new Dictionary<string, object>();
+            JObject dic = new JObject();
             dic.Add("user_id", result.user_id);
             dic.Add("tank", result.tank);
             dic.Add("modes", result.mode);
@@ -26,47 +30,54 @@ namespace TankFlow
             dic.Add("hits_received", result.hits_received);
             dic.Add("damage_received", result.damage_received);
             dic.Add("enermy_detected", result.enermy_detected);
-            string param = GetJSONParam(dic);
+
+            string param = "param=" + dic.ToString();
             //Console.WriteLine(param);
-            string response = HttpConnect.HttpPost(mBaseURL + request, param);
-            if (response == "0") return false;
-            else return true;
-
-        }
-        public static string getParam(Damage damage)
-        {
-            string tempURL = mBaseURL;
-            string json = "{";
-            json = json + "'attacke':'" + damage.source + "',";
-            json = json + "'victim':'" + damage.victim + "',";
-            json = json + "'damage':" + damage.damage.ToString() + ",";
-            json = json + "'damagetype':" + damage.type.ToString() + ",";
-            json = json + "'battletype':" + damage.battleType.ToString() + ",";
-            json = json + "'battleid':" + damage.battleId.ToString();
-            json = json + "}";
-            return "param=" + json;
-        }
-
-        public static string GetJSONParam(Dictionary<string, object> param)
-        {
-            string json = "{";
-            foreach (KeyValuePair<string, object> item in param)
+            for(int i = 1; i <= mMaxRetryTimes; i++)
             {
-                json = json + "'" + item.Key + "':'" + item.Value + "',";
+                string response = HttpConnect.HttpPostSafe(mBaseURL + request, param);
+                if (response != "")
+                {
+                    Log.AddLog("上传战斗结果成功。");
+                    return true;
+                }
+                Log.Record("上传战斗结果异常，正在重试第" + i.ToString() + "次");
             }
-            json = json + "}";
-            return "param=" + json;
+            Log.Record("上传战斗结果失败，重试了" + mMaxRetryTimes.ToString() + "次仍然失败，已丢弃数据");
+            return false;
         }
 
-        public static string getParam(string user_id, string tank, string victory, int modes)
+        public static string BattleStart(string uid)
         {
-            string json = "{";
-            json = json + "'user_id':'" + user_id + "',";
-            json = json + "'tank':'" + tank + "',";
-            json = json + "'victory':" + victory + ",";
-            json = json + "'modes':" + modes.ToString();
-            json = json + "}";
-            return "param=" + json;
+            JObject param = new JObject();
+            param.Add("id", uid);
+            string response = HttpConnect.HttpPostSafe(mBaseURL + "mBattleStart", "param=" + param.ToString());
+            if (response == "") return "0";
+            param = JObject.Parse(response);
+            return (string)param.GetValue("result");
+        }
+
+        public static bool BattleEnd(string uid)
+        {
+            JObject param = new JObject();
+            param.Add("id", uid);
+            string response = HttpConnect.HttpPostSafe(mBaseURL + "mBattleEnd", "param=" + param.ToString());
+            if (response == "") return false;
+            param = JObject.Parse(response);
+            return (bool)param.GetValue("result");
+        }
+
+        public static string HttpPostSafe(string url,string param)
+        {
+            string result = "";
+            try
+            {
+                result = HttpPost(url, param);
+            }catch(Exception e)
+            {
+                Log.AddLog(e.Message);
+            }
+            return result;
         }
 
         public static string HttpGet(string URL)
@@ -74,14 +85,15 @@ namespace TankFlow
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(URL);
             request.Method = "GET";
             request.ContentType = "application/json;charset=UTF-8";
-
+            request.UserAgent = "tanbox";
             HttpWebResponse response = (HttpWebResponse)request.GetResponse();
             Stream myResponseStream = response.GetResponseStream();
             StreamReader myStreamReader = new StreamReader(myResponseStream, Encoding.GetEncoding("utf-8"));
             string retString = myStreamReader.ReadToEnd();
             myStreamReader.Close();
             myResponseStream.Close();
-
+            response.Close();
+            
             return retString;
         }
 
@@ -91,6 +103,7 @@ namespace TankFlow
             HttpWebRequest req = (HttpWebRequest)WebRequest.Create(url);
             req.Method = "POST";
             req.ContentType = "application/x-www-form-urlencoded";
+            req.UserAgent = "tanbox";
 
             byte[] data = Encoding.UTF8.GetBytes(param);//把字符串转换为字节
 
@@ -108,7 +121,11 @@ namespace TankFlow
             using (StreamReader reader = new StreamReader(stream, Encoding.UTF8))
             {
                 result = reader.ReadToEnd();
+                reader.Close();
             }
+            stream.Close();
+            resp.Close();
+            
             return result;
         }
     }

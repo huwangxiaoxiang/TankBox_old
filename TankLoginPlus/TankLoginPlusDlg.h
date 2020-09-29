@@ -38,31 +38,32 @@ protected:
 
 	BOOL checkDLL();
 	DECLARE_MESSAGE_MAP()
-	CString services[7] = { CString("华南一区"),CString("华东一区"),CString("华东二区"),CString("华南二区"),CString("华北一区"),CString("华东三区"),CString("华南三区") };
-	CString missiles[7] = { CString("银币弹"),CString("普通金币弹"),CString("军团金币弹"),CString("龙腾金币弹"),CString("虎啸金币弹"),CString("熊吼金币弹"),CString("领主金币弹") };
+	
+	CString missiles[8] = { CString("银币弹"),CString("普通金币弹"),CString("军团金币弹"),CString("龙腾金币弹"),CString("虎啸金币弹"),CString("熊吼金币弹"),CString("领主金币弹"),CString("猎鹰金币弹") };
 	BaseAPI api;
 	int service=-1;
 	LPTSTR id;
 	LPTSTR key;
 	std::string accountId;
 	std::string accountName;
+	std::string accountEmail;
 	BOOL isLogin;
 
 public:
 	CComboBox ServerBox;
 
-	afx_msg void OnBnClickedOk();
+	afx_msg void OnBnClickedStartGame();
 	void Start();
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
 	BOOL DirectGame(LPTSTR ID, LPTSTR key, int serverID);
 	BOOL is_common;
-	void mSaveAccount(std::string id, std::string name);
+	void mSaveAccount(std::string id, std::string name,std::string email);
 
 private:
 	LPTSTR GameStartCMD(LPTSTR ID, LPTSTR key, int serverID);
 	LPTSTR getTankDir();
 	BOOL Is_exist(LPTSTR path);
-	BOOL startGames(LPTSTR ID, LPTSTR key, int serverID);
+	BOOL startGames(LPTSTR startCMD);
 
 	FILETIME get_Filetime(LPTSTR path);
 
@@ -80,6 +81,8 @@ private:
 
 	BOOL mCheckBoxConfig();
 	void mReadUserConfig();
+
+	BOOL InjectDll();
 
 	
 
@@ -99,8 +102,6 @@ private:
 	BOOL night_speak;
 	// 战斗力评估
 	BOOL battle_evaluate;
-	// 熊吼金币弹
-	BOOL bear_missile;
 
 
 public:
@@ -109,10 +110,9 @@ public:
 	afx_msg void OnBnClickedCheck4();
 	afx_msg void OnBnClickedCheck5();
 	afx_msg void OnBnClickedCheck6();
-	afx_msg void OnBnClickedCheck7();
 	afx_msg void OnBnClickedLoginBtn();
 
-	void setAccount(std::string id, std::string name);
+	void setAccount(std::string id, std::string name,std::string email);
 	void setLoginState(BOOL is_login);
 private:
 	CString loginText;
@@ -138,4 +138,40 @@ private:
 	BOOL viewDistance;
 public:
 	afx_msg void OnBnClickedCheck12();
+private:
+	BOOL short_chat;
+public:
+	afx_msg void OnBnClickedCheck13();
+	afx_msg void OnEnChangeEdit1();
+private:
+	BOOL fast_upgrade;
+public:
+	afx_msg void OnBnClickedFastUpgrade();
+	afx_msg void OnNMReleasedcaptureSlider1(NMHDR* pNMHDR, LRESULT* pResult);
+	afx_msg void OnTRBNThumbPosChangingSlider1(NMHDR* pNMHDR, LRESULT* pResult);
+	afx_msg void OnNMThemeChangedSlider1(NMHDR* pNMHDR, LRESULT* pResult);
+	afx_msg void OnNMCustomdrawSlider1(NMHDR* pNMHDR, LRESULT* pResult);
+protected:
+	CSliderCtrl damage_slider;
+public:
+	CComboBox enermy_missile;
+	afx_msg void OnCbnSelchangeEnermyMissile();
+protected:
+	BOOL auto_cruise;
+public:
+	afx_msg void OnBnClickedCheck7();
+	// 伤害减免显示绑定变量
+	BOOL pre_name;
+	afx_msg void OnBnClickedCheck15();
+protected:
+	// FPS提升选项绑定变量
+	BOOL block_aura;
+public:
+	afx_msg void OnBnClickedCheck16();
+private:
+	BOOL for_video;
+public:
+	afx_msg void OnBnClickedCheck17();
+	BOOL viewCircle;
+	afx_msg void OnBnClickedCheck18();
 };

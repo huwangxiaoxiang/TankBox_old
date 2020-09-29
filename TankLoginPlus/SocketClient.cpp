@@ -1,3 +1,4 @@
+
 #include "pch.h"
 #include "SocketClient.h"
 
@@ -20,6 +21,7 @@ void ReceiveMessage(SocketClient* client) {
 			} while (true);
 			if (length_sum <= 0) break;
 			client->OnReceiveMessage(ss.str());
+			ss.str().c_str();
 		}
 		catch (int s) {
 			client->is_exit = true;
@@ -61,8 +63,7 @@ void SocketClient::ConnectServer()
 	}
 	this->OnConnectEstablish();
 	this->is_exit = false;
-	SocketClient* th = this;
-	std::thread receive_thread(ReceiveMessage,th);
+	std::thread receive_thread(ReceiveMessage,this);
 	receive_thread.detach();
 }
 

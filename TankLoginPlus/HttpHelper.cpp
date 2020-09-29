@@ -7,7 +7,7 @@
 #include <locale>
 #include <codecvt>
 
-HttpHelper::HttpHelper()
+HttpHelper::HttpHelper(int outTime)
 {
 #ifdef WIN32
 	//此处一定要初始化一下，否则gethostbyname返回一直为空
@@ -16,65 +16,100 @@ HttpHelper::HttpHelper()
 	int resu=WSAStartup(MAKEWORD(2, 2), &wsa);
 	std::cout << resu << std::endl;
 #endif
+	this->outtimes = outTime * 1000;
+
 }
 
 std::string HttpHelper::socketHttp(std::string host, std::string request)
 {
-	int sockfd;
+	
 	struct sockaddr_in address;
 	struct hostent* server;
 
-	sockfd = socket(AF_INET, SOCK_STREAM, 0);
-	if (sockfd == -1) {
-		OutputDebugString(L"创建Socket失败\n");
-		return "";
-	}
 	address.sin_family = AF_INET;
 	address.sin_port = htons(80);
-	
-	server = gethostbyname(host.c_str());
-	if (server == NULL) {
-		OutputDebugString(L"域名解析失败!\n");
-		return "";
-	}
-	else {
-		memcpy((char*)& address.sin_addr.s_addr, (char*)server->h_addr, server->h_length);
+
+	for (int i = 0; i < this->retrytimes; i++) {
+		int sockfd;
+
+		server = gethostbyname(host.c_str());
+		if (server == NULL) {
+			LPTSTR s = new TCHAR[200];
+			wnsprintf(s, 200, L"第%d次域名解析失败!\n", i);
+			OutputDebugString(s);
+			Sleep(this->outtimes/100);
+			continue;
+		}
+		else {
+			memcpy((char*)& address.sin_addr.s_addr, (char*)server->h_addr, server->h_length);
+		}
+
+		sockfd = socket(AF_INET, SOCK_STREAM, 0);
+		if (sockfd == -1) {
+			LPTSTR s = new TCHAR[200];
+			wnsprintf(s, 200, L"第%d次创建Socket失败!\n", i);
+			OutputDebugString(s);
+			continue;
+		}
+
+		setsockopt(sockfd, SOL_SOCKET, SO_RCVTIMEO, (char*)& this->outtimes, sizeof(int));
+		setsockopt(sockfd, SOL_SOCKET, SO_SNDTIMEO, (char*)& this->outtimes, sizeof(int));
+
+		if (-1 == connect(sockfd, (struct sockaddr*) & address, sizeof(address))) {
+			LPTSTR s = new TCHAR[200];
+			wnsprintf(s, 200, L"第%d次连接服务器失败!\n", i);
+			OutputDebugString(s);
+			continue;
+		}
+
+		bool error = false;
 		
-	}
-	
-	if (-1 == connect(sockfd, (struct sockaddr*) & address, sizeof(address))) {
-		OutputDebugString(L"连接服务器失败\n");
-		return "";
-	}
-
-	//DBG << request << std::endl;
+		//DBG << request << std::endl;
 #ifdef WIN32
-	send(sockfd, request.c_str(), request.size(), 0);
-#else
-	write(sockfd, request.c_str(), request.size());
-#endif
-	std::stringstream result;
-	int rc;
-	char* buf = new char[1024];
+		if (-1 == send(sockfd, request.c_str(), request.size(), 0)) {
+			closesocket(sockfd);
 
-#ifdef WIN32
-	while (rc = recv(sockfd, buf, 1024, 0))
+			continue;
+		}
 #else
-	while (rc = read(sockfd, buf + offset, 1024))
+		if (-1 == write(sockfd, request.c_str(), request.size())) {
+			close(sockfd);
+			continue;
+		}
 #endif
-	{
-		if (rc < 1024) buf[rc] = '\0';
-		result << buf;
-		buf = new char[1024];
-	}
+		
+		std::stringstream result;
+		int rc;
+		char* buf = new char[1024];
 
 #ifdef WIN32
-	closesocket(sockfd);
+		while (rc = recv(sockfd, buf, 1024, 0))
 #else
-	close(sockfd);
+		while (rc = read(sockfd, buf + offset, 1024))
 #endif
-	return result.str();
+		{
+			if (rc == -1) {
+				result.clear();
+				error = true;
+				break;
+			}
+			if (rc < 1024) buf[rc] = '\0';
+			result << buf;
+			buf = new char[1024];
+		}
+
+#ifdef WIN32
+		closesocket(sockfd);
+#else
+		close(sockfd);
+#endif
+		if (error) continue;
+		return result.str();
+	}
+	return "";
 }
+
+
 
 std::string HttpHelper::postData(std::string host, std::string path, std::string post_content)
 {
@@ -101,7 +136,6 @@ std::string HttpHelper::getData(std::string host, std::string path, std::string 
 	stream << "Host: " << host << "\r\n";
 	stream << "User-Agent: Mozilla/5.0 (Windows; U; Windows NT 5.1; zh-CN; rv:1.9.2.3) Gecko/20100401 Firefox/3.6.3\r\n";
 	stream << "Connection:close\r\n\r\n";
-	
 	
 	return socketHttp(host, stream.str());
 }

@@ -195,6 +195,8 @@
     <ClInclude Include="HttpHelper.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="Resource.h" />
+    <ClInclude Include="ServerList.h" />
+    <ClInclude Include="ServerListManager.h" />
     <ClInclude Include="SocketClient.h" />
     <ClInclude Include="TankLoginPlus.h" />
     <ClInclude Include="TankLoginPlusDlg.h" />
@@ -212,6 +214,8 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="ServerList.cpp" />
+    <ClCompile Include="ServerListManager.cpp" />
     <ClCompile Include="SocketClient.cpp" />
     <ClCompile Include="TankLoginPlus.cpp" />
     <ClCompile Include="TankLoginPlusDlg.cpp" />

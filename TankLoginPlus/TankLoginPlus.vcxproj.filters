@@ -51,6 +51,12 @@
     <ClInclude Include="BoxReceiver.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="ServerList.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="ServerListManager.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="TankLoginPlus.cpp">
@@ -78,6 +84,12 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="BoxReceiver.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="ServerList.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="ServerListManager.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

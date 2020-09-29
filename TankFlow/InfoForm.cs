@@ -28,19 +28,29 @@ namespace TankFlow
         private List<Damage> damage_list = new List<Damage>();
         private Damage[] temp_damage = new Damage[6];
 
-        private int user_id = -1;
+        private string user_id = "-1";
 
         public SocketClient python_client;
 
         private float rec_alpha = 0;
         private string rec_text = "正在识别...";
-        private string tank_client;
+        public string tank_client;
 
         private int shoot_sum = 0;
         private int hit_sum = 0;
         private int penertrate_sum = 0;
         private int maxdamage_sum = 0;
+        
 
+        /// <summary>
+        ///  造成的总伤害
+        /// </summary>
+        private int damage_sum = 0;
+
+        /// <summary>
+        ///  承受总伤害
+        /// </summary>
+        private int shield_sum = 0;
 
         public TankFlow()
         {
@@ -49,7 +59,7 @@ namespace TankFlow
             this.postimer.Stop();
             this.StartPosition = FormStartPosition.Manual;
             followPosition();
-            this.user_id = -1;
+            this.user_id = "-1";
             SocketManager.StartServer(10824, new MessageReceiver(this), false);
         }
 
@@ -81,11 +91,14 @@ namespace TankFlow
             for (int i = 0; i < 6; i++)
                 temp_damage[i] = new Damage("");
             drawLabels();
-            DrawSpot("");
+            //DrawSpot("");
+            DrawBulb(false);
             this.shoot_sum = 0;
             this.hit_sum = 0;
             this.penertrate_sum = 0;
             this.maxdamage_sum = 0;
+            this.damage_sum = 0;
+            this.shield_sum = 0;
             this.DrawScore();
         }
 
@@ -104,9 +117,9 @@ namespace TankFlow
         /// <param name="m"></param>
         void drawLabels()
         {
-            Point init = new Point(1, 36);
-            int dy = 30;
-            int width = 350, height = 25;
+            Point init = new Point(1, 80);
+            int dy = 28;
+            int width = 350, height = 20;
             Color green_color, red_color, border_color;
             border_color = Color.FromArgb(10, 0, 0);
             green_color = Color.FromArgb(80, 215, 120);
@@ -135,13 +148,13 @@ namespace TankFlow
                     left = red_color;
                     right = green_color;
                 }
-                GDIDraw.Paint_Text(temp.fillspace(10, temp.source), rect, left, border_color, g, 14f);
-                rect.Offset(115, 0);
-                GDIDraw.Paint_Text("->", rect, Color.FromArgb(255,255,255), border_color, g, 14f);
-                rect.Offset(30, 0);
-                GDIDraw.Paint_Text(temp.fillspace(10, temp.victim), rect, right, border_color, g, 14f);
-                rect.Offset(115, 0);
-                GDIDraw.Paint_Text(temp.GetDamageType(), rect, left, border_color, g, 14f);
+                GDIDraw.Paint_Text(temp.fillspace(10, temp.source), rect, left, border_color, g, 12f);
+                rect.Offset(80, 0);
+                GDIDraw.Paint_Text("->", rect, Color.FromArgb(255,255,255), border_color, g, 12f);
+                rect.Offset(15, 0);
+                GDIDraw.Paint_Text(temp.fillspace(10, temp.victim), rect, right, border_color, g, 12f);
+                rect.Offset(100, 0);
+                GDIDraw.Paint_Text(temp.GetDamageType()+"("+temp.GetHitPartName()+")", rect, left, border_color, g, 12f);
 
             }
             g.Dispose();
@@ -150,18 +163,24 @@ namespace TankFlow
 
         private void DrawScore()
         {
-            string text = "※ " + this.hit_sum.ToString();
-            text = text + "      ➹ " + this.penertrate_sum.ToString();
-            text = text + "      ★ " + this.maxdamage_sum.ToString();
-            Point init = new Point(130, 7);
+            string line1 = "中 " + this.hit_sum.ToString();
+            line1 = line1 + "      穿 " + this.penertrate_sum.ToString();
+            line1 = line1 + "      暴 " + this.maxdamage_sum.ToString();
+            string line2 = "伤 " + this.damage_sum.ToString();
+            line2 = line2 + "      防 " + this.shield_sum.ToString();
+            Point init = new Point(80,17);
             Graphics g = this.CreateGraphics();
             Brush back_brush = new SolidBrush(this.BackColor);
-            Rectangle rect = new Rectangle(init.X,init.Y,200,30);
-            g.FillRectangle(back_brush, rect);
+            Rectangle rect1 = new Rectangle(init.X,init.Y,220,25);
+            Rectangle rect2 = new Rectangle(init.X, init.Y + 25, 220, 30);
+            g.FillRectangle(back_brush, rect1);
+            g.FillRectangle(back_brush, rect2);
             Color font_color, border_color;
             border_color = Color.FromArgb(10, 0, 0);
-            font_color = Color.FromArgb(255,255,255);
-            GDIDraw.Paint_Text(text, rect, font_color, border_color, g, 13f);
+            font_color = Color.FromArgb(50,190,243);
+           
+            GDIDraw.Paint_Text(line1, rect1, font_color, border_color, g, 11f);
+            GDIDraw.Paint_Text(line2, rect2, font_color, border_color, g, 11f);
             g.Dispose();
             back_brush.Dispose();
         }
@@ -179,6 +198,23 @@ namespace TankFlow
             GDIDraw.Paint_Text(text, rect, font_color, border_color, g, 20f);
             g.Dispose();
             back_brush.Dispose();
+        }
+
+        private void DrawBulb(bool draw)
+        {
+            Point init = new Point(0, 0);
+            Rectangle rect = new Rectangle(init.X, init.Y, 70, 70);
+            Graphics g = this.CreateGraphics();
+            Brush back_brush = new SolidBrush(this.BackColor);
+            g.FillRectangle(back_brush, rect);
+            if (draw)
+            {
+                Image img = Image.FromFile("Resource//pao.png");
+                GraphicsUnit units = GraphicsUnit.Pixel;                //单位设置成像素
+                g.DrawImage(img, 0, 0, rect, units);
+            }
+            back_brush.Dispose();
+            g.Dispose();
         }
 
         private void drawRec(int alpha)
@@ -257,7 +293,10 @@ namespace TankFlow
 
         public void HandleCopyData(string host, ReceivedData data)
         {
-            this.tank_client = host;
+            if (data.dataKey != 3)
+            {
+                this.tank_client = host;
+            }
             MethodInvoker mi = new MethodInvoker(() =>
             {
                 switch (data.dataKey)
@@ -273,7 +312,7 @@ namespace TankFlow
                         }
                         break;
                     case 2://战斗结果
-                        if (this.user_id != -1)
+                        if (this.user_id != "-1")
                         {
                             BattleResult result = new BattleResult(this.user_id.ToString() + "," + data.message);
                             if (result.valid)
@@ -288,31 +327,30 @@ namespace TankFlow
                         }
                         break;
                     case 3://设置user_id
-                        bool resu = int.TryParse(data.message, out this.user_id);
-                        if (!resu)
-                            this.user_id = -1;
-                        else
-                        {
-                            Log.AddLog("设置ID成功 " + this.user_id.ToString());
-                        }
+                       this.user_id = data.message;
+                       Log.AddLog("设置ID成功 " + this.user_id);
                         break;
                     case 4://事件信息
                         int flag = int.Parse(data.message);
                         this.OnHandleEvent(flag);
                         break;
                     case 5://玩家击中目标
-                        Log.AddLog("玩家击中了目标:" + data.message);
+                        //Log.AddLog("玩家击中了目标:" + data.message);
                         this.hit_sum++;
-                        if (data.message != "5")
+                        string[] str = data.message.Split(',');
+                        if (str[0]!= "5")
                         {
                             this.penertrate_sum++;
-                            if (data.message == "9")
+                            this.damage_sum += int.Parse(str[1]);
+                            if (str[0] == "9")
                                 this.maxdamage_sum++;
                         }
-                       
                         this.DrawScore();
                         break;
-                    
+                    case 6://玩家被击中
+                        this.shield_sum += int.Parse(data.message);
+                        this.DrawScore();
+                        break;
                 }
             });
             this.BeginInvoke(mi);
@@ -340,8 +378,48 @@ namespace TankFlow
                 }
             }
             damage_list.Clear();
-            UploadManager manager = new UploadManager(valid_damage);
-            manager.Upload();//开始上传数据
+            Thread th = new Thread(()=>
+            {
+                UploadManager manager = new UploadManager(valid_damage);
+                manager.Upload();//开始上传数据
+            });
+            th.Start();
+        }
+
+        private void RequestAdvanceFeature()
+        {
+            Thread th = new Thread(() =>
+              {
+                  string advance = "0";
+                  if (this.user_id != "-1")
+                  {
+                      advance = HttpConnect.BattleStart(this.user_id.ToString());
+                  }
+                  if (advance == "0")
+                  {
+                      Log.AddLog("未验证高级功能权利");
+                  }
+                  else
+                  {
+                      Log.AddLog("已验证高级功能权利"+advance);
+                  }
+                  SocketManager.SendData(this.tank_client, "3_" + advance);
+              });
+            th.Start();
+          
+        }
+
+        private void StopAdvanceFeature()
+        {
+            bool advance = false;
+            if (this.user_id != "-1")
+            {
+                advance = HttpConnect.BattleEnd(this.user_id.ToString());
+            }
+            if (advance)
+            {
+                Log.AddLog("已停止高级功能权利");
+            }
         }
 
         private void OnHandleEvent(int flag)
@@ -353,75 +431,110 @@ namespace TankFlow
                     this.Show();
                     this.postimer.Start();
                     Log.AddLog("战斗开始");
-                    new Thread(() =>
-                    {
-                        this.python_client = new PythonClient(34567, "127.0.0.1", this);
-                        this.python_client.ConnectServer();
-                        this.python_client.SendData("1 start_record");
-                    }).Start();
+                    PrepareSoundRecognize();
                     break;
                 case BATTLE_END:
-                    this.postimer.Stop();
-                    this.Hide();
                     Log.AddLog("战斗结束");
-                    uploadData();
-                    initWindow();
-                    this.clearRec();
+                    this.postimer.Stop();
                     this.recognizeTimer.Stop();
+                    this.clearRec();
+                    initWindow();
+                    this.Hide();
+                    StopAdvanceFeature();
+                    uploadData();
                     new Thread(() =>
                     {
-                        if (python_client != null)
+                        if (python_client != null&&python_client.IsConnect())
                         {
-                            python_client.SendData("1 stop_record");
+                            python_client.SendData("1 stop_recognize");
                             this.python_client.DisConnect();
                         }
-
                     }).Start();
                     break;
                 case SPOTED:
                     //this.spot_state.Visible = true;
-                    DrawSpot("已被点亮");
+                    Log.AddLog("已被点亮");
+                    DrawBulb(true);
                     this.Show();
                     this.postimer.Start();
                     break;
                 case UNSPOTED:
                     //this.spot_state.Visible = false;
-                    DrawSpot("");
+                    Log.AddLog("已经灭点");
+                    DrawBulb(false);
                     break;
                 case DISABLE_PANEL:
+                    Log.AddLog("战斗面板已禁用");
                     this.show_damage_panel = false;
                     break;
                 case ENALBE_PANEL:
+                    Log.AddLog("战斗面板已启用");
                     this.show_damage_panel = true;
                     break;
                 case STARTRECOGNIZE:
                     Log.AddLog("开始语音识别...");
-                    if (python_client != null)
-                    {
-                        python_client.SendData("1 start_recognize");
-                        this.rec_text = "正在识别...";
-                        this.recognizeTimer.Start();
-                    }
+                    this.StartSoundRecognize();
                     break;
                 case STOPRECOGNIZE:
                     Log.AddLog("结束语音识别...");
-                    if (python_client != null)
-                    {
-                        python_client.SendData("1 stop_recognize");
-                    }
-                    this.recognizeTimer.Stop();
-                    this.clearRec();
-                    this.DrawScore();
+                    this.StopSoundRecognize();
                     break;
                 case 36286://玩家射击了一次
-                    //Log.AddLog("玩家射击了一次");
+                    Log.AddLog("玩家射击了一次");
                     this.shoot_sum++;
                     this.DrawScore();
+                    break;
+                case 36287:
+                    Log.AddLog("请求刷新高级特性");
+                    RequestAdvanceFeature();
+                    break;
+                case 36288:
+                    Log.AddLog("玩家被击毁");
+                    DrawBulb(false);
                     break;
                 default:
                     Log.AddLog("未知消息类型：" + flag);
                     break;
             }
+        }
+
+        
+
+        private void PrepareSoundRecognize()
+        {
+            new Thread(() =>
+            {
+                this.python_client = new PythonClient(34567, "127.0.0.1", this);
+                this.python_client.ConnectServer();
+            }).Start();
+        }
+
+        private void StopSoundRecognize()
+        {
+            if (python_client != null)
+            {
+                python_client.SendData("1 stop_recognize");
+            }
+            this.recognizeTimer.Stop();
+            this.clearRec();
+            this.DrawScore();
+        }
+
+        private void StartSoundRecognize()
+        {
+            this.rec_text = "正在识别...";
+            this.recognizeTimer.Start();
+            new Thread(() =>
+            {
+                if (this.python_client == null)
+                {
+                    this.python_client = new PythonClient(34567, "127.0.0.1", this);
+                    this.python_client.ConnectServer();
+                }
+                python_client.SendData("1 start_recognize");
+
+            }).Start();
+           
         }
 
         [StructLayout(LayoutKind.Sequential)]

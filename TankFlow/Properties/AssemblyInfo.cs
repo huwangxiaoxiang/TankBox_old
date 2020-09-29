@@ -7,7 +7,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("TankFlow")]
 [assembly: AssemblyDescription("坦克大战盒子战斗面板")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("鹄望潇湘")]
 [assembly: AssemblyProduct("TankFlow")]
 [assembly: AssemblyCopyright("Copyright ©  2019")]
 [assembly: AssemblyTrademark("")]
@@ -31,5 +31,5 @@ using System.Runtime.InteropServices;
 //可以指定所有这些值，也可以使用“生成号”和“修订号”的默认值
 //通过使用 "*"，如下所示:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("1.0.9.4")]
-[assembly: AssemblyFileVersion("1.0.9.4")]
+[assembly: AssemblyVersion("1.0.9.14")]
+[assembly: AssemblyFileVersion("1.0.9.14")]

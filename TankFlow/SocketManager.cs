@@ -30,6 +30,7 @@ namespace TankFlow
             socket_mutex.WaitOne();
             clients.Add(ip, socket);
             socket_mutex.ReleaseMutex();
+            //Log.AddLog("已经向列表中添加了连接:" + ip);
         }
 
         public static void StartServer(int port, Receiver receiver, bool localIP = true)
@@ -47,7 +48,7 @@ namespace TankFlow
             socket_mutex.WaitOne();
             clients.Remove(host);
             socket_mutex.ReleaseMutex();
-
+           // Log.AddLog("已经从列表中移除了连接:" + host);
         }
 
         public static void StopServer()
@@ -74,10 +75,19 @@ namespace TankFlow
 
         public static int SendData(string ip, string message)
         {
+            //Log.AddLog("开始发送数据..." + message);
             Socket socket = GetClientSocket(ip);
+            int sended = 0;
             if (socket != null)
-                return socket.Send(Encoding.UTF8.GetBytes(message));
-            else return 0;
+            {
+                sended= socket.Send(Encoding.UTF8.GetBytes(message));
+                Log.AddLog("已发送数据：" +sended);
+            }
+            else
+            {
+               Log.AddLog("发送数据时Socket为NULL："+ip);
+            }
+            return sended;
         }
 
         public static int SendByte(string ip, byte[] buffer, int size)
@@ -116,7 +126,7 @@ namespace TankFlow
             }
             catch(Exception e)
             {
-                Log.Record("获取本机IP失败:" + e.Message);
+                Log.Record("[Server]获取本机IP失败:" + e.Message);
                 return "";
             }
         }
@@ -185,7 +195,7 @@ namespace TankFlow
                 }
                 catch(Exception e)
                 {
-                    Log.Record("服务器监听连接线程已捕获到异常，服务端监听已停止"+e.Message);
+                    Log.Record("[Server]服务器监听连接线程已捕获到异常，服务端监听已停止"+e.Message);
                 }
             }
             try
@@ -219,18 +229,21 @@ namespace TankFlow
                             break;
                         }
                     } while (true);
-
-                    if (length_sum == 0) break;
-                    //Log.AddLog("服务端收到消息:" + message);
+                    Log.AddLog("服务端收到消息:" + message+" 来自"+clientIp);
+                    if (length_sum == 0)
+                    {
+                       Log.AddLog("收到的消息长度为0,将断开连接:" + clientIp);
+                        break;
+                    }
                     mMessageReceiver.OnReceiveMessage(clientIp, message);
                 }
                 catch (Exception ex)
                 {
-                    Log.Record("Socket连接已关闭：" + ex.Message);
+                    Log.AddLog("Socket连接已关闭：" + ex.Message);
                     break;
                 }
             }
-            clientSocket.Close();
+            SocketManager.CloseConnect(clientIp);
             mMessageReceiver.OnBreakConnect(clientIp);
             Log.AddLog("客户端" + clientIp + "的连接已断开");
         }
@@ -313,6 +326,7 @@ namespace TankFlow
                 _socket.Connect(endPoint);
                 this.remoteIp = _socket.RemoteEndPoint.ToString();
                 this.close = false;
+                Log.AddLog("已连接至" + this.remoteIp);
                 this.OnConnectEstablish();
                 Thread s = new Thread(OnReceive);
                 s.Start();
@@ -349,7 +363,7 @@ namespace TankFlow
             }
             catch (Exception e)
             {
-                Log.Record("byte消息发送失败:" + e.Message);
+                Log.Record("[Client]byte消息发送失败:" + e.Message);
             }
         }
 
@@ -388,16 +402,18 @@ namespace TankFlow
                 catch (Exception e)
                 {
                     this.close = true;
-                   Log.Record("Socket连接已关闭:"+e.Message);
+                   Log.AddLog("Socket连接已关闭:"+e.Message);
                     break;
                 }
             }
+            //Log.AddLog("[Client]close:"+this.close.ToString());
+            //Log.AddLog("[Client]close:"+this.close.ToString());
             if (this._socket != null)
                 this._socket.Close();
             this.OnConnectBroken();
             this._socket = null;
             this.close = true;
-            Log.AddLog("[客户端]与服务端的连接已断开");
+            Log.AddLog("[Client]与服务端的连接已断开");
         }
 
     }

@@ -24,7 +24,7 @@ namespace TankFlow
 
         public override void OnReceiveConnect(string host)
         {
-
+           
         }
 
         public override void OnReceiveMessage(string host, string message)

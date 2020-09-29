@@ -29,7 +29,5 @@ public:
 	virtual void OnReceiveByte(char* buffer, int length);
 	virtual void OnCompleteReceive();
 	virtual void OnConnectBroken();
-	
-
 };
 

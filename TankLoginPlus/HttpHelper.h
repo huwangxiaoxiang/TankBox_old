@@ -10,7 +10,7 @@ class HttpHelper
 {
 
 public :
-	HttpHelper();
+	HttpHelper(int outTime=10);
 	std::string postData(std::string host, std::string path, std::string post_content);
 
 	std::string getData(std::string host, std::string path, std::string get_content);
@@ -24,6 +24,8 @@ public :
 
 protected:
 	std::string socketHttp(std::string host, std::string request);
+	int retrytimes = 5;
+	int outtimes = 0;
 
 };
 
