@@ -1,5 +1,4 @@
-﻿
-// TankLoginPlusDlg.cpp: 实现文件
+﻿// TankLoginPlusDlg.cpp: 实现文件
 //
 
 #include "pch.h"
@@ -250,6 +249,8 @@ void CTankLoginPlusDlg::OnBnClickedStartGame()
 		if (pure_btn) {
 			//DirectGame(id, key, service);
 			MessageBox(L"请直接从官方游戏启动入口启动游戏", L"纯净模式", MB_ICONINFORMATION | MB_OK);
+			this->GetDlgItem(IDOK)->EnableWindow(TRUE);
+			return;
 		}
 		SetDlgItemText(IDOK, L"版本检查...");
 		this->update_check = check_Assembly();
@@ -725,6 +726,7 @@ void CTankLoginPlusDlg::savePlugin()
 	this->setPluginState("block_aura", this->block_aura);
 	this->setPluginState("for_video", this->for_video);
 	this->setPluginState("viewCircle", this->viewCircle);
+	this->setPluginState("auto_select_tank", true);
 
 	TankPluginManager::setPlugin("missile_kind", std::to_string(this->missile_kind.GetCurSel()+1)); 
 	TankPluginManager::setPlugin("enermy_missile", std::to_string(this->enermy_missile.GetCurSel() + 1));
